@@ -1,0 +1,150 @@
+{
+  "production_model": "cnn_tuned",
+  "selection_criterion": "highest validation accuracy (test set never used for selection)",
+  "dataset_source": "kaggle:hojjatk/mnist-dataset",
+  "results": {
+    "logistic_regression": {
+      "val": {
+        "accuracy": 0.9188333333333333,
+        "precision_macro": 0.9181116438142949,
+        "recall_macro": 0.9179196529436169,
+        "f1_macro": 0.9179460548535925,
+        "log_loss": 0.29855599999427795,
+        "inference_ms_per_image": 0.0036637865000557213,
+        "latency_ms_single": 0.09786249984244932
+      },
+      "test": {
+        "accuracy": 0.9218,
+        "precision_macro": 0.9207523882035307,
+        "recall_macro": 0.92065671080173,
+        "f1_macro": 0.9205801738069896,
+        "log_loss": 0.2745513319969177,
+        "inference_ms_per_image": 0.0024700845001461857,
+        "latency_ms_single": 0.10097999984282069
+      }
+    },
+    "knn": {
+      "val": {
+        "accuracy": 0.9771666666666666,
+        "precision_macro": 0.9773299685378412,
+        "recall_macro": 0.9769614271614151,
+        "f1_macro": 0.977121391938651,
+        "log_loss": 0.18392349779605865,
+        "inference_ms_per_image": 0.14682280500005618,
+        "latency_ms_single": 2.3461904997930105
+      },
+      "test": {
+        "accuracy": 0.9764,
+        "precision_macro": 0.9763626221634569,
+        "recall_macro": 0.9761566736882225,
+        "f1_macro": 0.97623842771292,
+        "log_loss": 0.1945466250181198,
+        "inference_ms_per_image": 0.15069403350003086,
+        "latency_ms_single": 2.4448235001273133
+      }
+    },
+    "svm": {
+      "val": {
+        "accuracy": 0.98,
+        "precision_macro": 0.9799135415962376,
+        "recall_macro": 0.9798325389847855,
+        "f1_macro": 0.9798477446357851,
+        "log_loss": 0.07247265428304672,
+        "inference_ms_per_image": 0.34909342850005487,
+        "latency_ms_single": 0.9035924999807321
+      },
+      "test": {
+        "accuracy": 0.9782,
+        "precision_macro": 0.9781561055578549,
+        "recall_macro": 0.9779645315122849,
+        "f1_macro": 0.9780466755462841,
+        "log_loss": 0.06775278598070145,
+        "inference_ms_per_image": 0.31109106600001724,
+        "latency_ms_single": 0.752057999761746
+      }
+    },
+    "ann": {
+      "val": {
+        "accuracy": 0.982,
+        "precision_macro": 0.9818737247271834,
+        "recall_macro": 0.9818968965544392,
+        "f1_macro": 0.9818649659988271,
+        "log_loss": 0.06795776635408401,
+        "inference_ms_per_image": 0.040343322000126136,
+        "latency_ms_single": 3.2075870001335716
+      },
+      "test": {
+        "accuracy": 0.9813,
+        "precision_macro": 0.9812651655055399,
+        "recall_macro": 0.9812120448405135,
+        "f1_macro": 0.981229327886765,
+        "log_loss": 0.06240001693367958,
+        "inference_ms_per_image": 0.04066063749996829,
+        "latency_ms_single": 2.935790000265115
+      }
+    },
+    "cnn_baseline": {
+      "val": {
+        "accuracy": 0.9891666666666666,
+        "precision_macro": 0.9890787715143506,
+        "recall_macro": 0.9891859180374384,
+        "f1_macro": 0.9891143423777828,
+        "log_loss": 0.037058185786008835,
+        "inference_ms_per_image": 0.071854709499803,
+        "latency_ms_single": 8.08563800023876
+      },
+      "test": {
+        "accuracy": 0.9915,
+        "precision_macro": 0.9914369313681887,
+        "recall_macro": 0.9913996455998895,
+        "f1_macro": 0.9914126051002661,
+        "log_loss": 0.026369696483016014,
+        "inference_ms_per_image": 0.07608083200011606,
+        "latency_ms_single": 7.428417999790327
+      }
+    },
+    "cnn_tuned": {
+      "val": {
+        "accuracy": 0.9916666666666667,
+        "precision_macro": 0.9916285043380197,
+        "recall_macro": 0.9916505721951696,
+        "f1_macro": 0.9916350553966513,
+        "log_loss": 0.03340296819806099,
+        "inference_ms_per_image": 0.11525777399992876,
+        "latency_ms_single": 13.221816999703151
+      },
+      "test": {
+        "accuracy": 0.9951,
+        "precision_macro": 0.9950922926718668,
+        "recall_macro": 0.9949852140031961,
+        "f1_macro": 0.9950317247730874,
+        "log_loss": 0.01926988922059536,
+        "inference_ms_per_image": 0.11060522249999849,
+        "latency_ms_single": 13.71024649984065
+      }
+    },
+    "cnn_tuned_aug": {
+      "val": {
+        "accuracy": 0.9903333333333333,
+        "precision_macro": 0.9903006642748171,
+        "recall_macro": 0.9903255941957827,
+        "f1_macro": 0.9902910925605752,
+        "log_loss": 0.02737521380186081,
+        "inference_ms_per_image": 0.11392316649994427,
+        "latency_ms_single": 13.12753000001976
+      },
+      "test": {
+        "accuracy": 0.9939,
+        "precision_macro": 0.993905348041088,
+        "recall_macro": 0.9939359457592906,
+        "f1_macro": 0.9939119110187769,
+        "log_loss": 0.020747864618897438,
+        "inference_ms_per_image": 0.10496269750001375,
+        "latency_ms_single": 13.724038499958624
+      }
+    }
+  },
+  "pipeline_minutes": 24.154217356033335,
+  "quick_mode": false,
+  "generated_at": "2026-11-13 17:42:23"
+}

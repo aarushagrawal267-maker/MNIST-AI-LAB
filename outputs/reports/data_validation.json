@@ -1,0 +1,102 @@
+{
+  "all_passed": true,
+  "checks": [
+    {
+      "check": "train: image shape",
+      "passed": true,
+      "detail": "(60000, 28, 28) (expected (60000, 28, 28))"
+    },
+    {
+      "check": "train: image dtype uint8",
+      "passed": true,
+      "detail": "uint8"
+    },
+    {
+      "check": "train: label count matches images",
+      "passed": true,
+      "detail": "60000 labels / 60000 images"
+    },
+    {
+      "check": "train: pixel range 0-255",
+      "passed": true,
+      "detail": "min=0, max=255"
+    },
+    {
+      "check": "train: labels are digits 0-9",
+      "passed": true,
+      "detail": "unique labels=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"
+    },
+    {
+      "check": "train: no severe class imbalance (max/min < 1.5)",
+      "passed": true,
+      "detail": "max/min ratio = 1.244"
+    },
+    {
+      "check": "train: no blank images",
+      "passed": true,
+      "detail": "0 blank images"
+    },
+    {
+      "check": "test: image shape",
+      "passed": true,
+      "detail": "(10000, 28, 28) (expected (10000, 28, 28))"
+    },
+    {
+      "check": "test: image dtype uint8",
+      "passed": true,
+      "detail": "uint8"
+    },
+    {
+      "check": "test: label count matches images",
+      "passed": true,
+      "detail": "10000 labels / 10000 images"
+    },
+    {
+      "check": "test: pixel range 0-255",
+      "passed": true,
+      "detail": "min=0, max=255"
+    },
+    {
+      "check": "test: labels are digits 0-9",
+      "passed": true,
+      "detail": "unique labels=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"
+    },
+    {
+      "check": "test: no severe class imbalance (max/min < 1.5)",
+      "passed": true,
+      "detail": "max/min ratio = 1.272"
+    },
+    {
+      "check": "test: no blank images",
+      "passed": true,
+      "detail": "0 blank images"
+    }
+  ],
+  "source": "kaggle:hojjatk/mnist-dataset",
+  "class_counts": {
+    "train": [
+      5923,
+      6742,
+      5958,
+      6131,
+      5842,
+      5421,
+      5918,
+      6265,
+      5851,
+      5949
+    ],
+    "test": [
+      980,
+      1135,
+      1032,
+      1010,
+      982,
+      892,
+      958,
+      1028,
+      974,
+      1009
+    ]
+  }
+}

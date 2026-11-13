@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-13",
+  "checks": [
+    {
+      "check": "Automated tests (pytest)",
+      "result": "53 passed, 0 failed (tests/: data, preprocessing, image processor, models, predictions, explainability)"
+    },
+    {
+      "check": "Browser: all pages",
+      "result": "13/13 pages rendered in headless Chromium with no Python exceptions and no JavaScript errors"
+    },
+    {
+      "check": "Browser: Draw Your Digit",
+      "result": "digits 0, 1, 2, 3, 4 and 7 drawn with real mouse strokes on the canvas; all 6 predicted correctly by TRAX (100.0% displayed confidence)"
+    },
+    {
+      "check": "Browser: Upload Your Digit",
+      "result": "an 800x600 JPEG 'photo' of a dark pen 7 on unevenly lit paper was predicted as 7; a corrupt PNG produced the message 'The file could not be decoded as an image...'"
+    },
+    {
+      "check": "Browser: Batch Prediction",
+      "result": "ZIP of 20 MNIST test digits + a .txt file + a corrupt PNG + the photo: 21 predicted (all 21 matched the true labels), 2 skipped with reasons, CSV export available"
+    },
+    {
+      "check": "Browser: Model Training",
+      "result": "a CNN trained from the web form (2,000 images, 2 epochs) with live metrics and curves, saved to models/custom/, registered and reloaded via 'Load & verify' (test model removed afterwards)"
+    }
+  ]
+}

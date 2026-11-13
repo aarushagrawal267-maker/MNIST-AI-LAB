@@ -1,0 +1,203 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794590291.877499    2949 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794590293.008965    2949 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+[data] source=kaggle:hojjatk/mnist-dataset validation_passed=True
+[eda] statistics -> /home/user/MNIST-AI-LAB/outputs/reports/eda_stats.json
+
+=== Training ann: 784 -> Dense256 -> Dense128 -> Softmax10 (aug=False) ===
+Epoch 1/15
+422/422 - 3s - 7ms/step - accuracy: 0.9078 - loss: 0.3155 - val_accuracy: 0.9565 - val_loss: 0.1494 - learning_rate: 0.0010
+Epoch 2/15
+422/422 - 2s - 5ms/step - accuracy: 0.9610 - loss: 0.1286 - val_accuracy: 0.9690 - val_loss: 0.1056 - learning_rate: 0.0010
+Epoch 3/15
+422/422 - 2s - 5ms/step - accuracy: 0.9715 - loss: 0.0916 - val_accuracy: 0.9713 - val_loss: 0.0931 - learning_rate: 0.0010
+Epoch 4/15
+422/422 - 2s - 5ms/step - accuracy: 0.9769 - loss: 0.0738 - val_accuracy: 0.9750 - val_loss: 0.0856 - learning_rate: 0.0010
+Epoch 5/15
+422/422 - 2s - 5ms/step - accuracy: 0.9813 - loss: 0.0591 - val_accuracy: 0.9753 - val_loss: 0.0786 - learning_rate: 0.0010
+Epoch 6/15
+422/422 - 2s - 5ms/step - accuracy: 0.9842 - loss: 0.0500 - val_accuracy: 0.9787 - val_loss: 0.0749 - learning_rate: 0.0010
+Epoch 7/15
+422/422 - 2s - 4ms/step - accuracy: 0.9854 - loss: 0.0442 - val_accuracy: 0.9778 - val_loss: 0.0763 - learning_rate: 0.0010
+Epoch 8/15
+422/422 - 2s - 5ms/step - accuracy: 0.9876 - loss: 0.0387 - val_accuracy: 0.9772 - val_loss: 0.0772 - learning_rate: 0.0010
+Epoch 9/15
+422/422 - 2s - 5ms/step - accuracy: 0.9924 - loss: 0.0236 - val_accuracy: 0.9803 - val_loss: 0.0713 - learning_rate: 5.0000e-04
+Epoch 10/15
+422/422 - 2s - 4ms/step - accuracy: 0.9937 - loss: 0.0187 - val_accuracy: 0.9818 - val_loss: 0.0712 - learning_rate: 5.0000e-04
+Epoch 11/15
+422/422 - 2s - 5ms/step - accuracy: 0.9940 - loss: 0.0182 - val_accuracy: 0.9817 - val_loss: 0.0731 - learning_rate: 5.0000e-04
+Epoch 12/15
+422/422 - 2s - 5ms/step - accuracy: 0.9962 - loss: 0.0133 - val_accuracy: 0.9820 - val_loss: 0.0681 - learning_rate: 2.5000e-04
+Epoch 13/15
+422/422 - 2s - 5ms/step - accuracy: 0.9969 - loss: 0.0106 - val_accuracy: 0.9817 - val_loss: 0.0720 - learning_rate: 2.5000e-04
+Epoch 14/15
+422/422 - 2s - 4ms/step - accuracy: 0.9969 - loss: 0.0110 - val_accuracy: 0.9823 - val_loss: 0.0688 - learning_rate: 2.5000e-04
+Epoch 15/15
+422/422 - 2s - 5ms/step - accuracy: 0.9979 - loss: 0.0079 - val_accuracy: 0.9828 - val_loss: 0.0710 - learning_rate: 1.2500e-04
+[ann] val_acc=0.9820 val_loss=0.0681 time=30.5s
+
+=== Training cnn_baseline: Conv32-Pool -> Conv64-Pool -> Dense128 -> Dropout0.3 -> Softmax (aug=False) ===
+Epoch 1/15
+422/422 - 9s - 22ms/step - accuracy: 0.9239 - loss: 0.2527 - val_accuracy: 0.9780 - val_loss: 0.0809 - learning_rate: 0.0010
+Epoch 2/15
+422/422 - 9s - 21ms/step - accuracy: 0.9777 - loss: 0.0724 - val_accuracy: 0.9847 - val_loss: 0.0559 - learning_rate: 0.0010
+Epoch 3/15
+422/422 - 8s - 19ms/step - accuracy: 0.9844 - loss: 0.0513 - val_accuracy: 0.9873 - val_loss: 0.0482 - learning_rate: 0.0010
+Epoch 4/15
+422/422 - 8s - 19ms/step - accuracy: 0.9871 - loss: 0.0421 - val_accuracy: 0.9863 - val_loss: 0.0470 - learning_rate: 0.0010
+Epoch 5/15
+422/422 - 8s - 19ms/step - accuracy: 0.9886 - loss: 0.0364 - val_accuracy: 0.9877 - val_loss: 0.0422 - learning_rate: 0.0010
+Epoch 6/15
+422/422 - 8s - 19ms/step - accuracy: 0.9906 - loss: 0.0302 - val_accuracy: 0.9895 - val_loss: 0.0441 - learning_rate: 0.0010
+Epoch 7/15
+422/422 - 10s - 25ms/step - accuracy: 0.9922 - loss: 0.0251 - val_accuracy: 0.9892 - val_loss: 0.0388 - learning_rate: 0.0010
+Epoch 8/15
+422/422 - 8s - 20ms/step - accuracy: 0.9930 - loss: 0.0223 - val_accuracy: 0.9872 - val_loss: 0.0455 - learning_rate: 0.0010
+Epoch 9/15
+422/422 - 8s - 19ms/step - accuracy: 0.9932 - loss: 0.0212 - val_accuracy: 0.9892 - val_loss: 0.0371 - learning_rate: 0.0010
+Epoch 10/15
+422/422 - 8s - 19ms/step - accuracy: 0.9943 - loss: 0.0161 - val_accuracy: 0.9870 - val_loss: 0.0473 - learning_rate: 0.0010
+Epoch 11/15
+422/422 - 8s - 19ms/step - accuracy: 0.9951 - loss: 0.0154 - val_accuracy: 0.9893 - val_loss: 0.0423 - learning_rate: 0.0010
+Epoch 12/15
+422/422 - 8s - 19ms/step - accuracy: 0.9969 - loss: 0.0095 - val_accuracy: 0.9897 - val_loss: 0.0453 - learning_rate: 5.0000e-04
+Epoch 13/15
+422/422 - 8s - 19ms/step - accuracy: 0.9972 - loss: 0.0080 - val_accuracy: 0.9893 - val_loss: 0.0407 - learning_rate: 5.0000e-04
+[cnn_baseline] val_acc=0.9892 val_loss=0.0371 time=108.8s
+
+--- Trial 1/10: Conv32-Pool -> Conv64-Pool -> Dense128 -> Dropout0.3 -> Softmax | adam lr=0.001 bs=128 epochs=4
+    EXP-016: val_acc=0.9747 val_loss=0.0873 (13.4s, 225,034 params)
+
+--- Trial 2/10: Conv64-Pool -> Conv128-Pool -> Dense256 -> Dropout0.3 -> Softmax | adam lr=0.0003 bs=64 epochs=3
+    EXP-017: val_acc=0.9768 val_loss=0.0823 (28.3s, 896,522 params)
+
+--- Trial 3/10: Conv64+BN-Pool -> Conv128+BN-Pool -> Dense64 -> Dropout0.2 -> Softmax | adam lr=0.0003 bs=64 epochs=3
+    EXP-018: val_acc=0.9795 val_loss=0.0685 (34.7s, 280,586 params)
+
+--- Trial 4/10: Conv64+BN-Pool -> Conv128+BN-Pool -> Dense64 -> Dropout0.3 -> Softmax | rmsprop lr=0.003 bs=64 epochs=3
+    EXP-019: val_acc=0.9498 val_loss=0.2006 (33.4s, 280,586 params)
+
+--- Trial 5/10: Conv64x2+BN-Pool -> Conv128x2+BN-Pool -> Dense128 -> Dropout0.2 -> Softmax | rmsprop lr=0.0003 bs=64 epochs=3
+    EXP-020: val_acc=0.9748 val_loss=0.0985 (122.7s, 1,064,394 params)
+
+--- Trial 6/10: Conv32+BN-Pool -> Conv64+BN-Pool -> Dense128 -> Dropout0.5 -> Softmax | adam lr=0.001 bs=256 epochs=5
+    EXP-021: val_acc=0.9765 val_loss=0.0799 (23.1s, 225,322 params)
+
+--- Trial 7/10: Conv64+BN-Pool -> Conv128+BN-Pool -> Dense64 -> Dropout0.5 -> Softmax | sgd lr=0.001 bs=256 epochs=5
+    EXP-022: val_acc=0.9585 val_loss=0.1524 (51.0s, 280,586 params)
+
+--- Trial 8/10: Conv64-Pool -> Conv128-Pool -> Dense64 -> Dropout0.5 -> Softmax | rmsprop lr=0.0003 bs=64 epochs=3
+    EXP-023: val_acc=0.9598 val_loss=0.1315 (19.9s, 280,010 params)
+
+--- Trial 9/10: Conv16x2+BN-Pool -> Conv32x2+BN-Pool -> Dense128 -> Dropout0.5 -> Softmax | adam lr=0.001 bs=128 epochs=5
+    EXP-024: val_acc=0.9822 val_loss=0.0688 (34.2s, 218,778 params)
+
+--- Trial 10/10: Conv16x2-Pool -> Conv32x2-Pool -> Dense256 -> Dropout0.5 -> Softmax | sgd lr=0.0003 bs=256 epochs=3
+    EXP-025: val_acc=0.1705 val_loss=2.2841 (10.5s, 420,602 params)
+
+[tuning] best trial EXP-024: Conv16x2+BN-Pool -> Conv32x2+BN-Pool -> Dense128 -> Dropout0.5 -> Softmax val_acc=0.9822
+
+=== Training cnn_tuned: Conv16x2+BN-Pool -> Conv32x2+BN-Pool -> Dense128 -> Dropout0.5 -> Softmax (aug=False) ===
+Epoch 1/20
+422/422 - 24s - 56ms/step - accuracy: 0.9029 - loss: 0.3192 - val_accuracy: 0.9773 - val_loss: 0.0786 - learning_rate: 0.0010
+Epoch 2/20
+422/422 - 23s - 53ms/step - accuracy: 0.9698 - loss: 0.1041 - val_accuracy: 0.9835 - val_loss: 0.0663 - learning_rate: 0.0010
+Epoch 3/20
+422/422 - 24s - 57ms/step - accuracy: 0.9771 - loss: 0.0808 - val_accuracy: 0.9860 - val_loss: 0.0490 - learning_rate: 0.0010
+Epoch 4/20
+422/422 - 23s - 55ms/step - accuracy: 0.9810 - loss: 0.0610 - val_accuracy: 0.9873 - val_loss: 0.0513 - learning_rate: 0.0010
+Epoch 5/20
+422/422 - 22s - 51ms/step - accuracy: 0.9828 - loss: 0.0571 - val_accuracy: 0.9873 - val_loss: 0.0474 - learning_rate: 0.0010
+Epoch 6/20
+422/422 - 22s - 53ms/step - accuracy: 0.9852 - loss: 0.0496 - val_accuracy: 0.9887 - val_loss: 0.0446 - learning_rate: 0.0010
+Epoch 7/20
+422/422 - 23s - 53ms/step - accuracy: 0.9869 - loss: 0.0447 - val_accuracy: 0.9890 - val_loss: 0.0387 - learning_rate: 0.0010
+Epoch 8/20
+422/422 - 22s - 51ms/step - accuracy: 0.9881 - loss: 0.0400 - val_accuracy: 0.9868 - val_loss: 0.0451 - learning_rate: 0.0010
+Epoch 9/20
+422/422 - 32s - 76ms/step - accuracy: 0.9883 - loss: 0.0377 - val_accuracy: 0.9888 - val_loss: 0.0449 - learning_rate: 0.0010
+Epoch 10/20
+422/422 - 28s - 67ms/step - accuracy: 0.9928 - loss: 0.0246 - val_accuracy: 0.9912 - val_loss: 0.0372 - learning_rate: 5.0000e-04
+Epoch 11/20
+422/422 - 22s - 51ms/step - accuracy: 0.9934 - loss: 0.0215 - val_accuracy: 0.9910 - val_loss: 0.0337 - learning_rate: 5.0000e-04
+Epoch 12/20
+422/422 - 21s - 51ms/step - accuracy: 0.9939 - loss: 0.0198 - val_accuracy: 0.9908 - val_loss: 0.0337 - learning_rate: 5.0000e-04
+Epoch 13/20
+422/422 - 22s - 53ms/step - accuracy: 0.9941 - loss: 0.0195 - val_accuracy: 0.9900 - val_loss: 0.0424 - learning_rate: 5.0000e-04
+Epoch 14/20
+422/422 - 21s - 50ms/step - accuracy: 0.9948 - loss: 0.0151 - val_accuracy: 0.9902 - val_loss: 0.0366 - learning_rate: 2.5000e-04
+Epoch 15/20
+422/422 - 21s - 50ms/step - accuracy: 0.9955 - loss: 0.0141 - val_accuracy: 0.9917 - val_loss: 0.0334 - learning_rate: 2.5000e-04
+Epoch 16/20
+422/422 - 22s - 52ms/step - accuracy: 0.9961 - loss: 0.0127 - val_accuracy: 0.9922 - val_loss: 0.0368 - learning_rate: 2.5000e-04
+Epoch 17/20
+422/422 - 22s - 52ms/step - accuracy: 0.9964 - loss: 0.0118 - val_accuracy: 0.9908 - val_loss: 0.0348 - learning_rate: 2.5000e-04
+Epoch 18/20
+422/422 - 49s - 115ms/step - accuracy: 0.9972 - loss: 0.0094 - val_accuracy: 0.9912 - val_loss: 0.0403 - learning_rate: 1.2500e-04
+Epoch 19/20
+422/422 - 36s - 86ms/step - accuracy: 0.9974 - loss: 0.0087 - val_accuracy: 0.9917 - val_loss: 0.0399 - learning_rate: 1.2500e-04
+[cnn_tuned] val_acc=0.9917 val_loss=0.0334 time=478.0s
+
+=== Training cnn_tuned_aug: Conv16x2+BN-Pool -> Conv32x2+BN-Pool -> Dense128 -> Dropout0.5 -> Softmax (aug=True) ===
+WARNING:tensorflow:AutoGraph could not transform <function make_dataset.<locals>.<lambda> at 0x7ff61d173880> and will run it as-is.
+Cause: could not parse the source code of <function make_dataset.<locals>.<lambda> at 0x7ff61d173880>: no matching AST found among candidates:
+# coding=utf-8
+lambda a, b: (aug(a, training=True), b)
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+Epoch 1/20
+422/422 - 36s - 86ms/step - accuracy: 0.8334 - loss: 0.5241 - val_accuracy: 0.9687 - val_loss: 0.1029 - learning_rate: 0.0010
+Epoch 2/20
+422/422 - 22s - 53ms/step - accuracy: 0.9475 - loss: 0.1809 - val_accuracy: 0.9782 - val_loss: 0.0790 - learning_rate: 0.0010
+Epoch 3/20
+422/422 - 23s - 54ms/step - accuracy: 0.9592 - loss: 0.1424 - val_accuracy: 0.9825 - val_loss: 0.0633 - learning_rate: 0.0010
+Epoch 4/20
+422/422 - 23s - 55ms/step - accuracy: 0.9672 - loss: 0.1172 - val_accuracy: 0.9822 - val_loss: 0.0569 - learning_rate: 0.0010
+Epoch 5/20
+422/422 - 23s - 55ms/step - accuracy: 0.9694 - loss: 0.1053 - val_accuracy: 0.9842 - val_loss: 0.0559 - learning_rate: 0.0010
+Epoch 6/20
+422/422 - 24s - 56ms/step - accuracy: 0.9738 - loss: 0.0920 - val_accuracy: 0.9840 - val_loss: 0.0528 - learning_rate: 0.0010
+Epoch 7/20
+422/422 - 24s - 56ms/step - accuracy: 0.9755 - loss: 0.0856 - val_accuracy: 0.9862 - val_loss: 0.0433 - learning_rate: 0.0010
+Epoch 8/20
+422/422 - 23s - 54ms/step - accuracy: 0.9766 - loss: 0.0802 - val_accuracy: 0.9788 - val_loss: 0.0780 - learning_rate: 0.0010
+Epoch 9/20
+422/422 - 22s - 53ms/step - accuracy: 0.9781 - loss: 0.0779 - val_accuracy: 0.9862 - val_loss: 0.0558 - learning_rate: 0.0010
+Epoch 10/20
+422/422 - 22s - 53ms/step - accuracy: 0.9832 - loss: 0.0598 - val_accuracy: 0.9913 - val_loss: 0.0297 - learning_rate: 5.0000e-04
+Epoch 11/20
+422/422 - 23s - 53ms/step - accuracy: 0.9846 - loss: 0.0550 - val_accuracy: 0.9877 - val_loss: 0.0368 - learning_rate: 5.0000e-04
+Epoch 12/20
+422/422 - 23s - 55ms/step - accuracy: 0.9839 - loss: 0.0557 - val_accuracy: 0.9898 - val_loss: 0.0316 - learning_rate: 5.0000e-04
+Epoch 13/20
+422/422 - 24s - 56ms/step - accuracy: 0.9868 - loss: 0.0470 - val_accuracy: 0.9903 - val_loss: 0.0310 - learning_rate: 2.5000e-04
+Epoch 14/20
+422/422 - 24s - 57ms/step - accuracy: 0.9869 - loss: 0.0455 - val_accuracy: 0.9903 - val_loss: 0.0274 - learning_rate: 2.5000e-04
+Epoch 15/20
+422/422 - 24s - 56ms/step - accuracy: 0.9860 - loss: 0.0501 - val_accuracy: 0.9892 - val_loss: 0.0331 - learning_rate: 2.5000e-04
+Epoch 16/20
+422/422 - 23s - 54ms/step - accuracy: 0.9875 - loss: 0.0457 - val_accuracy: 0.9888 - val_loss: 0.0327 - learning_rate: 2.5000e-04
+Epoch 17/20
+422/422 - 24s - 56ms/step - accuracy: 0.9884 - loss: 0.0399 - val_accuracy: 0.9903 - val_loss: 0.0304 - learning_rate: 1.2500e-04
+Epoch 18/20
+422/422 - 25s - 58ms/step - accuracy: 0.9893 - loss: 0.0389 - val_accuracy: 0.9902 - val_loss: 0.0333 - learning_rate: 1.2500e-04
+[cnn_tuned_aug] val_acc=0.9903 val_loss=0.0274 time=430.7s
+
+[select] TRAX = cnn_tuned (val_acc=0.9917)
+[eval] logistic_regression    val  acc=0.9188 f1=0.9179
+[eval] logistic_regression    test acc=0.9218 f1=0.9206
+[eval] knn                    val  acc=0.9772 f1=0.9771
+[eval] knn                    test acc=0.9764 f1=0.9762
+[eval] svm                    val  acc=0.9800 f1=0.9798
+[eval] svm                    test acc=0.9782 f1=0.9780
+[eval] ann                    val  acc=0.9820 f1=0.9819
+[eval] ann                    test acc=0.9813 f1=0.9812
+[eval] cnn_baseline           val  acc=0.9892 f1=0.9891
+[eval] cnn_baseline           test acc=0.9915 f1=0.9914
+[eval] cnn_tuned              val  acc=0.9917 f1=0.9916
+[eval] cnn_tuned              test acc=0.9951 f1=0.9950
+[eval] cnn_tuned_aug          val  acc=0.9903 f1=0.9903
+[eval] cnn_tuned_aug          test acc=0.9939 f1=0.9939
+
+[done] pipeline finished in 24.2 min -> /home/user/MNIST-AI-LAB/outputs/reports/results_summary.json

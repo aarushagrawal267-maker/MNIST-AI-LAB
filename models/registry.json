@@ -1,0 +1,312 @@
+{
+  "production_model": "cnn_tuned",
+  "models": {
+    "logistic_regression": {
+      "display_name": "Logistic Regression",
+      "family": "sklearn",
+      "input_kind": "flat",
+      "model_type": "logistic_regression",
+      "architecture": "Multinomial logistic regression on 784 normalised pixels (L-BFGS)",
+      "path": "models/logistic_regression.joblib",
+      "params": 0,
+      "hyperparameters": {},
+      "augmentation": false,
+      "train_samples": 54000,
+      "epochs_trained": null,
+      "train_time_s": 5.703750112999842,
+      "val_accuracy": 0.9188333333333333,
+      "val_loss": 0.29855599999427795,
+      "custom": false,
+      "stage": "baseline",
+      "registered_at": "2026-11-13 17:08:58",
+      "val_metrics": {
+        "accuracy": 0.9188333333333333,
+        "precision_macro": 0.9181116438142949,
+        "recall_macro": 0.9179196529436169,
+        "f1_macro": 0.9179460548535925,
+        "log_loss": 0.29855599999427795,
+        "inference_ms_per_image": 0.0036637865000557213,
+        "latency_ms_single": 0.09786249984244932
+      },
+      "test_metrics": {
+        "accuracy": 0.9218,
+        "precision_macro": 0.9207523882035307,
+        "recall_macro": 0.92065671080173,
+        "f1_macro": 0.9205801738069896,
+        "log_loss": 0.2745513319969177,
+        "inference_ms_per_image": 0.0024700845001461857,
+        "latency_ms_single": 0.10097999984282069
+      }
+    },
+    "knn": {
+      "display_name": "K-Nearest Neighbors",
+      "family": "sklearn",
+      "input_kind": "flat",
+      "model_type": "knn",
+      "architecture": "PCA(50) -> k-NN (k=3, distance-weighted)",
+      "path": "models/knn.joblib",
+      "params": 0,
+      "hyperparameters": {},
+      "augmentation": false,
+      "train_samples": 54000,
+      "epochs_trained": null,
+      "train_time_s": 0.2860066050000114,
+      "val_accuracy": 0.9771666666666666,
+      "val_loss": 0.18562194542752886,
+      "custom": false,
+      "stage": "baseline",
+      "registered_at": "2026-11-13 17:09:00",
+      "val_metrics": {
+        "accuracy": 0.9771666666666666,
+        "precision_macro": 0.9773299685378412,
+        "recall_macro": 0.9769614271614151,
+        "f1_macro": 0.977121391938651,
+        "log_loss": 0.18392349779605865,
+        "inference_ms_per_image": 0.14682280500005618,
+        "latency_ms_single": 2.3461904997930105
+      },
+      "test_metrics": {
+        "accuracy": 0.9764,
+        "precision_macro": 0.9763626221634569,
+        "recall_macro": 0.9761566736882225,
+        "f1_macro": 0.97623842771292,
+        "log_loss": 0.1945466250181198,
+        "inference_ms_per_image": 0.15069403350003086,
+        "latency_ms_single": 2.4448235001273133
+      }
+    },
+    "svm": {
+      "display_name": "Support Vector Machine",
+      "family": "sklearn",
+      "input_kind": "flat",
+      "model_type": "svm",
+      "architecture": "PCA(50) -> RBF-kernel SVC (C=5), trained on a 20k stratified subset",
+      "path": "models/svm.joblib",
+      "params": 0,
+      "hyperparameters": {},
+      "augmentation": false,
+      "train_samples": 20000,
+      "epochs_trained": null,
+      "train_time_s": 18.409604907999892,
+      "val_accuracy": 0.98,
+      "val_loss": 0.07247265140387533,
+      "custom": false,
+      "stage": "baseline",
+      "registered_at": "2026-11-13 17:09:20",
+      "val_metrics": {
+        "accuracy": 0.98,
+        "precision_macro": 0.9799135415962376,
+        "recall_macro": 0.9798325389847855,
+        "f1_macro": 0.9798477446357851,
+        "log_loss": 0.07247265428304672,
+        "inference_ms_per_image": 0.34909342850005487,
+        "latency_ms_single": 0.9035924999807321
+      },
+      "test_metrics": {
+        "accuracy": 0.9782,
+        "precision_macro": 0.9781561055578549,
+        "recall_macro": 0.9779645315122849,
+        "f1_macro": 0.9780466755462841,
+        "log_loss": 0.06775278598070145,
+        "inference_ms_per_image": 0.31109106600001724,
+        "latency_ms_single": 0.752057999761746
+      }
+    },
+    "ann": {
+      "display_name": "Neural Network (ANN)",
+      "family": "keras",
+      "input_kind": "image",
+      "model_type": "ann",
+      "architecture": "784 -> Dense256 -> Dropout0.2 -> Dense128 -> Softmax10",
+      "path": "models/ann.keras",
+      "params": 235146,
+      "hyperparameters": {
+        "hidden_units": [
+          256,
+          128
+        ],
+        "dropout": 0.2,
+        "learning_rate": 0.001,
+        "optimizer": "adam",
+        "batch_size": 128
+      },
+      "augmentation": false,
+      "train_samples": 54000,
+      "epochs_trained": 15,
+      "train_time_s": 30.51074338499984,
+      "val_accuracy": 0.9819999933242798,
+      "val_loss": 0.06810139864683151,
+      "custom": false,
+      "stage": "baseline",
+      "registered_at": "2026-11-13 17:18:50",
+      "val_metrics": {
+        "accuracy": 0.982,
+        "precision_macro": 0.9818737247271834,
+        "recall_macro": 0.9818968965544392,
+        "f1_macro": 0.9818649659988271,
+        "log_loss": 0.06795776635408401,
+        "inference_ms_per_image": 0.040343322000126136,
+        "latency_ms_single": 3.2075870001335716
+      },
+      "test_metrics": {
+        "accuracy": 0.9813,
+        "precision_macro": 0.9812651655055399,
+        "recall_macro": 0.9812120448405135,
+        "f1_macro": 0.981229327886765,
+        "log_loss": 0.06240001693367958,
+        "inference_ms_per_image": 0.04066063749996829,
+        "latency_ms_single": 2.935790000265115
+      }
+    },
+    "cnn_baseline": {
+      "display_name": "CNN Baseline",
+      "family": "keras",
+      "input_kind": "image",
+      "model_type": "cnn",
+      "architecture": "Conv32-Pool -> Conv64-Pool -> Dense128 -> Dropout0.3 -> Softmax",
+      "path": "models/cnn_baseline.keras",
+      "params": 225034,
+      "hyperparameters": {
+        "filters": [
+          32,
+          64
+        ],
+        "convs_per_block": 1,
+        "kernel_size": 3,
+        "batchnorm": false,
+        "dense_units": 128,
+        "dropout": 0.3,
+        "learning_rate": 0.001,
+        "optimizer": "adam",
+        "batch_size": 128
+      },
+      "augmentation": false,
+      "train_samples": 54000,
+      "epochs_trained": 13,
+      "train_time_s": 108.825287656,
+      "val_accuracy": 0.9891666769981384,
+      "val_loss": 0.03705815225839615,
+      "custom": false,
+      "stage": "baseline",
+      "registered_at": "2026-11-13 17:20:39",
+      "val_metrics": {
+        "accuracy": 0.9891666666666666,
+        "precision_macro": 0.9890787715143506,
+        "recall_macro": 0.9891859180374384,
+        "f1_macro": 0.9891143423777828,
+        "log_loss": 0.037058185786008835,
+        "inference_ms_per_image": 0.071854709499803,
+        "latency_ms_single": 8.08563800023876
+      },
+      "test_metrics": {
+        "accuracy": 0.9915,
+        "precision_macro": 0.9914369313681887,
+        "recall_macro": 0.9913996455998895,
+        "f1_macro": 0.9914126051002661,
+        "log_loss": 0.026369696483016014,
+        "inference_ms_per_image": 0.07608083200011606,
+        "latency_ms_single": 7.428417999790327
+      }
+    },
+    "cnn_tuned": {
+      "display_name": "Tuned CNN",
+      "family": "keras",
+      "input_kind": "image",
+      "model_type": "cnn",
+      "architecture": "Conv16x2+BN-Pool -> Conv32x2+BN-Pool -> Dense128 -> Dropout0.5 -> Softmax",
+      "path": "models/cnn_tuned.keras",
+      "params": 218778,
+      "hyperparameters": {
+        "filters": [
+          16,
+          32
+        ],
+        "convs_per_block": 2,
+        "kernel_size": 3,
+        "batchnorm": true,
+        "dense_units": 128,
+        "dropout": 0.5,
+        "learning_rate": 0.001,
+        "optimizer": "adam",
+        "batch_size": 128
+      },
+      "augmentation": false,
+      "train_samples": 54000,
+      "epochs_trained": 19,
+      "train_time_s": 478.03286104100016,
+      "val_accuracy": 0.9916666746139526,
+      "val_loss": 0.03340288624167442,
+      "custom": false,
+      "stage": "final",
+      "registered_at": "2026-11-13 17:34:51",
+      "val_metrics": {
+        "accuracy": 0.9916666666666667,
+        "precision_macro": 0.9916285043380197,
+        "recall_macro": 0.9916505721951696,
+        "f1_macro": 0.9916350553966513,
+        "log_loss": 0.03340296819806099,
+        "inference_ms_per_image": 0.11525777399992876,
+        "latency_ms_single": 13.221816999703151
+      },
+      "test_metrics": {
+        "accuracy": 0.9951,
+        "precision_macro": 0.9950922926718668,
+        "recall_macro": 0.9949852140031961,
+        "f1_macro": 0.9950317247730874,
+        "log_loss": 0.01926988922059536,
+        "inference_ms_per_image": 0.11060522249999849,
+        "latency_ms_single": 13.71024649984065
+      }
+    },
+    "cnn_tuned_aug": {
+      "display_name": "Tuned CNN + Augmentation",
+      "family": "keras",
+      "input_kind": "image",
+      "model_type": "cnn",
+      "architecture": "Conv16x2+BN-Pool -> Conv32x2+BN-Pool -> Dense128 -> Dropout0.5 -> Softmax",
+      "path": "models/cnn_tuned_aug.keras",
+      "params": 218778,
+      "hyperparameters": {
+        "filters": [
+          16,
+          32
+        ],
+        "convs_per_block": 2,
+        "kernel_size": 3,
+        "batchnorm": true,
+        "dense_units": 128,
+        "dropout": 0.5,
+        "learning_rate": 0.001,
+        "optimizer": "adam",
+        "batch_size": 128
+      },
+      "augmentation": true,
+      "train_samples": 54000,
+      "epochs_trained": 18,
+      "train_time_s": 430.65189303399984,
+      "val_accuracy": 0.9903333187103271,
+      "val_loss": 0.027375150471925735,
+      "custom": false,
+      "stage": "final",
+      "registered_at": "2026-11-13 17:42:03",
+      "val_metrics": {
+        "accuracy": 0.9903333333333333,
+        "precision_macro": 0.9903006642748171,
+        "recall_macro": 0.9903255941957827,
+        "f1_macro": 0.9902910925605752,
+        "log_loss": 0.02737521380186081,
+        "inference_ms_per_image": 0.11392316649994427,
+        "latency_ms_single": 13.12753000001976
+      },
+      "test_metrics": {
+        "accuracy": 0.9939,
+        "precision_macro": 0.993905348041088,
+        "recall_macro": 0.9939359457592906,
+        "f1_macro": 0.9939119110187769,
+        "log_loss": 0.020747864618897438,
+        "inference_ms_per_image": 0.10496269750001375,
+        "latency_ms_single": 13.724038499958624
+      }
+    }
+  }
+}

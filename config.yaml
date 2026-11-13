@@ -1,0 +1,46 @@
+# PURF Lab — central configuration
+# All paths are relative to the project root.
+
+project:
+  lab_name: PURF
+  model_name: TRAX
+  seed: 42
+
+paths:
+  data_raw: data/raw
+  data_processed: data/processed
+  models: models
+  figures: outputs/figures
+  reports: outputs/reports
+
+data:
+  kaggle_dataset: hojjatk/mnist-dataset   # primary source (requested)
+  validation_size: 0.1                     # stratified split of the 60k training set
+  image_size: 28
+  num_classes: 10
+
+training:                                  # defaults for neural networks (CPU friendly)
+  batch_size: 128
+  epochs: 15
+  learning_rate: 0.001
+  optimizer: adam
+  early_stopping_patience: 4
+  reduce_lr_patience: 2
+  reduce_lr_factor: 0.5
+  min_lr: 1.0e-5
+
+classical:                                 # scikit-learn baselines
+  pca_components: 50
+  svm_train_samples: 20000                 # SVM is O(n^2); subset keeps it laptop-friendly
+  knn_neighbors: 3
+  logreg_max_iter: 300
+
+tuning:                                    # controlled hyperparameter search
+  train_subset: 15000
+  epochs: 4
+  max_trials: 10
+
+augmentation:
+  rotation_degrees: 10
+  translation: 0.10
+  zoom: 0.10

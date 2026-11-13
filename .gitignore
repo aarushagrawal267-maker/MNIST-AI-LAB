@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Dataset (downloaded automatically on first run)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Models trained interactively in the app
+models/custom/
+models/.stop*
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+outputs/reports/metrics/custom_*
+outputs/reports/predictions/custom_*
+outputs/reports/histories/custom_*
