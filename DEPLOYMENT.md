@@ -1,5 +1,9 @@
 # Deploying PURF to a public URL
 
+**Live deployment:** <https://mnist-ai-lab.streamlit.app/> (Streamlit Community Cloud, branch `main`). Browser-tested
+after deployment: 13/13 pages without errors, 10/10 hand-drawn digits recognised, photo upload and batch ZIP prediction
+correct, full TensorFlow feature set active.
+
 The app is ready for **Streamlit Community Cloud** (free, permanent URL, deploys straight from GitHub).
 This exact setup was rehearsed before release: fresh clone in `/mount/src/<repo>` (the path Streamlit Cloud uses),
 clean Python 3.12 environment installed with `uv` from `requirements.txt`, no cached dataset. Result: all 13 pages

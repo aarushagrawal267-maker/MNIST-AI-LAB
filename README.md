@@ -6,6 +6,9 @@
 > Draw a digit in the browser and watch TRAX read it — or explore the data, train and compare models,
 > analyse errors and look inside the network with explainable AI.
 
+### 🌐 Live demo: **[mnist-ai-lab.streamlit.app](https://mnist-ai-lab.streamlit.app/)**
+
+Run locally:
 ```bash
 streamlit run app.py
 ```
