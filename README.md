@@ -10,6 +10,19 @@
 streamlit run app.py
 ```
 
+
+## Screenshots
+
+| | |
+|---|---|
+| **Home dashboard** ![Home](docs/screenshots/01_home.jpg) | **Draw Your Digit** — live prediction, top-3, every preprocessing stage ![Draw](docs/screenshots/02_draw_your_digit.jpg) |
+| **Upload Your Digit** — a photographed pen digit ![Upload](docs/screenshots/03_upload_your_digit.jpg) | **Batch Prediction** — ZIP upload, CSV export, invalid files reported ![Batch](docs/screenshots/04_batch_prediction.jpg) |
+| **Dataset Explorer** ![Dataset](docs/screenshots/06_dataset_explorer_gallery.jpg) | **Image Preprocessing** — naive resize vs PURF pipeline ![Preprocessing](docs/screenshots/08_image_preprocessing.jpg) |
+| **Model Comparison** ![Comparison](docs/screenshots/12_model_comparison.jpg) | **Model Evaluation** ![Evaluation](docs/screenshots/13_model_evaluation.jpg) |
+| **Error Analysis** ![Errors](docs/screenshots/14_error_analysis.jpg) | **Explainable AI** ![XAI](docs/screenshots/15_explainable_ai.jpg) |
+
+All 16 screenshots (including augmentation, training, experiment tracking and insights) are in [`docs/screenshots/`](docs/screenshots/).
+
 ---
 
 ## Contents
