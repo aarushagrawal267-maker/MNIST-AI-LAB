@@ -19,6 +19,10 @@ about 1 GB of memory.
    | Main file path | `app.py` |
    | App URL (optional) | e.g. `purf-ai-lab` → `https://purf-ai-lab.streamlit.app` |
 4. Open **Advanced settings** → **Python version: 3.12** → **Save**. No secrets are needed.
+   > ⚠️ **Do not leave the default (3.14).** No TensorFlow release supports Python 3.14 yet (TensorFlow 2.21
+   > supports 3.10–3.13), so the build stops with *"Error installing requirements"*. The version cannot be changed
+   > after deployment: if this happens, delete the app (**My apps → ⋮ → Delete**) and create it again with 3.12.
+   > The Python version box is a search field — clear any typed text, then click **3.12** in the list.
 5. Click **Deploy**. The first build installs TensorFlow and takes about 3–6 minutes. The first visit then downloads
    MNIST from Kaggle (~20 s); after that, pages load from cache.
 
@@ -37,8 +41,8 @@ Push to the deployed branch — Streamlit Cloud redeploys automatically.
 
 ### Notes
 * Free apps sleep after a period without visitors; the first visitor then waits ~30 s for it to wake.
-* If the build fails with a dependency error, check that Python 3.12 (or 3.11) is selected — TensorFlow 2.21 has
-  no wheels for Python 3.14.
+* If the build fails with a dependency error, check the Python version: 3.11, 3.12 and 3.13 were verified to
+  resolve on Streamlit Cloud's Linux platform; 3.14 cannot work until TensorFlow publishes 3.14 wheels.
 * `requirements.txt` installs the slimmer `tensorflow-cpu` on Linux and the standard `tensorflow` on Windows/macOS;
   both run on CPU.
 
