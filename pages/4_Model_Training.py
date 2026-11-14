@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import io
+import threading
 import time
 from contextlib import redirect_stdout
 
@@ -11,7 +12,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from src import model_manager as mm
-from src.config import CFG, MODEL_NAME
+from src.config import CFG, DEMO_MAX_EPOCHS, DEMO_MAX_TRAIN_IMAGES, MODEL_NAME, PUBLIC_DEMO
 from src.experiment_tracker import ExperimentTracker
 from src.models import CNNConfig
 from src.train import load_history, train_and_register
@@ -27,6 +28,19 @@ T.page_header(
 )
 splits = C.safe_splits()
 ss = st.session_state
+
+
+@st.cache_resource
+def _training_lock() -> threading.Lock:
+    """One training job at a time per server (shared by all visitors)."""
+    return threading.Lock()
+
+
+if PUBLIC_DEMO:
+    st.info(
+        f"**Public demo:** training is limited to {DEMO_MAX_TRAIN_IMAGES:,} images and {DEMO_MAX_EPOCHS} epochs, one job "
+        f"at a time. Models you train here are temporary (they disappear when the server restarts) and cannot replace "
+        f"{MODEL_NAME}. Run the lab locally for full-size training.", icon=":material/public:")
 tab_train, tab_exp, tab_curves, tab_models = st.tabs(["Train a model", "Experiment tracker", "Learning curves", "Saved models"])
 
 # ======================================================================= train
@@ -64,11 +78,14 @@ with tab_train:
                                               "logistic_regression": "Logistic Regression", "knn": "K-Nearest Neighbors",
                                               "svm": "Support Vector Machine"}.get)
         name = top[1].text_input("Model name", value="My experiment")
-        subset = top[2].select_slider("Training images", [2000, 5000, 10000, 20000, 30000, 54000], value=10000,
+        subset_opts = [2000, 5000, 10000, 20000, 30000, 54000]
+        if PUBLIC_DEMO:
+            subset_opts = [n for n in subset_opts if n <= DEMO_MAX_TRAIN_IMAGES]
+        subset = top[2].select_slider("Training images", subset_opts, value=min(10000, subset_opts[-1]),
                                       help="Smaller subsets train faster on a laptop.")
         st.markdown("**Neural network settings** (ignored for classical models)")
         r1 = st.columns(5)
-        epochs = r1[0].slider("Epochs", 1, 30, 5)
+        epochs = r1[0].slider("Epochs", 1, DEMO_MAX_EPOCHS if PUBLIC_DEMO else 30, min(5, DEMO_MAX_EPOCHS) if PUBLIC_DEMO else 5)
         batch = r1[1].selectbox("Batch size", [32, 64, 128, 256], index=2)
         lr = r1[2].select_slider("Learning rate", [1e-4, 3e-4, 1e-3, 3e-3, 1e-2], value=1e-3, format_func=lambda v: f"{v:g}")
         opt = r1[3].selectbox("Optimizer", ["adam", "adamw", "rmsprop", "sgd"])
@@ -82,6 +99,10 @@ with tab_train:
         hidden = st.select_slider("ANN hidden layers", ["256", "256/128", "512/256/128"], value="256/128")
         submitted = st.form_submit_button("Start training", type="primary", icon=":material/play_arrow:")
 
+    lock = _training_lock()
+    if submitted and lock.locked():
+        st.warning("Another training job is running on this server right now — please try again in a minute.")
+        submitted = False
     if submitted:
         key = "custom_" + "".join(ch if ch.isalnum() else "_" for ch in name.lower()).strip("_")[:40] + time.strftime("_%H%M%S")
         cfg = CNNConfig(filters=[int(f) for f in filters.split("/")], convs_per_block=convs, batchnorm=bn,
@@ -120,15 +141,22 @@ with tab_train:
                                                f"loss {logs.get('loss', 0):.4f} · {time.time() - t0:.0f}s")
 
         buf = io.StringIO()
-        with st.spinner(f"Training {name}…"), redirect_stdout(buf):
-            res = train_and_register(
-                key, splits, ExperimentTracker(), "user", display_name=name, model_type=mtype,
-                cnn_config=cfg if mtype == "cnn" else None,
-                ann_kwargs={"hidden_units": tuple(int(h) for h in hidden.split("/")), "dropout": dropout,
-                            "learning_rate": lr, "optimizer": opt, "batch_size": batch} if mtype == "ann" else None,
-                epochs=epochs, augment=augment, train_subset=subset, custom=True,
-                on_epoch=on_epoch, on_batch=on_batch, verbose=0, notes="trained from the web app",
-            )
+        if not lock.acquire(blocking=False):  # acquired right before the guarded block, released in finally
+            ss["pending_run"] = None
+            st.warning("Another training job just started on this server — please try again in a minute.")
+            st.stop()
+        try:
+            with st.spinner(f"Training {name}…"), redirect_stdout(buf):
+                res = train_and_register(
+                    key, splits, ExperimentTracker(), "user", display_name=name, model_type=mtype,
+                    cnn_config=cfg if mtype == "cnn" else None,
+                    ann_kwargs={"hidden_units": tuple(int(h) for h in hidden.split("/")), "dropout": dropout,
+                                "learning_rate": lr, "optimizer": opt, "batch_size": batch} if mtype == "ann" else None,
+                    epochs=epochs, augment=augment, train_subset=subset, custom=True,
+                    on_epoch=on_epoch, on_batch=on_batch, verbose=0, notes="trained from the web app",
+                )
+        finally:
+            lock.release()  # also runs when the visitor stops the job
         ss["pending_run"] = None
         prog.progress(1.0, text="Done")
         from src.evaluate import evaluate_model
@@ -241,14 +269,14 @@ with tab_models:
             p = pred.predict_array(splits.x_val[:500])
             acc = (p.argmax(1) == splits.y_val[:500]).mean()
             st.success(f"Loaded in {time.time() - t0:.2f}s · sanity accuracy on 500 validation images: {acc * 100:.1f}%")
-        if ms[k]["family"] == "keras" and st.button(f"Use as {MODEL_NAME}", icon=":material/bolt:"):
+        if ms[k]["family"] == "keras" and not PUBLIC_DEMO and st.button(f"Use as {MODEL_NAME}", icon=":material/bolt:"):
             mm.set_production(k)
             st.cache_resource.clear()
             st.rerun()
     with c:
         st.write("")
         st.write("")
-        if ms[k].get("custom") and st.button("Delete model", icon=":material/delete:"):
+        if ms[k].get("custom") and not PUBLIC_DEMO and st.button("Delete model", icon=":material/delete:"):
             mm.delete_model(k)
             st.rerun()
     if ms[k]["family"] == "keras":

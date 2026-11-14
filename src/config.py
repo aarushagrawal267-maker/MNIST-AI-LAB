@@ -105,6 +105,16 @@ CUSTOM_MODELS_DIR: Path = MODELS_DIR / "custom"
 for _d in (METRICS_DIR, PREDICTIONS_DIR, HISTORY_DIR):
     _d.mkdir(parents=True, exist_ok=True)
 
+# Public demo mode: on a shared public deployment, heavy or global actions are limited.
+# Enabled automatically on Streamlit Community Cloud (apps run from /mount/src/<repo>)
+# or explicitly with the environment variable PURF_PUBLIC_DEMO=1.
+PUBLIC_DEMO: bool = (
+    os.environ.get("PURF_PUBLIC_DEMO", "").strip().lower() in ("1", "true", "yes")
+    or str(ROOT_DIR).replace("\\", "/").startswith("/mount/src")
+)
+DEMO_MAX_TRAIN_IMAGES = 10000
+DEMO_MAX_EPOCHS = 5
+
 REGISTRY_PATH: Path = MODELS_DIR / "registry.json"
 EXPERIMENTS_PATH: Path = REPORTS_DIR / "experiments.csv"
 EDA_STATS_PATH: Path = REPORTS_DIR / "eda_stats.json"
