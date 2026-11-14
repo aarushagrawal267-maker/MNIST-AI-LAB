@@ -1,0 +1,14 @@
+.git
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.ipynb_checkpoints
+data/raw/*
+data/processed/*
+models/custom
+docs
+notebooks
+tests
+outputs/reports/training_log*.txt

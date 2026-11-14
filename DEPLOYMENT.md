@@ -41,3 +41,35 @@ Push to the deployed branch — Streamlit Cloud redeploys automatically.
   no wheels for Python 3.14.
 * `requirements.txt` installs the slimmer `tensorflow-cpu` on Linux and the standard `tensorflow` on Windows/macOS;
   both run on CPU.
+
+## Hugging Face Spaces (fully scriptable, free)
+
+A Docker Space gets 2 vCPU and 16 GB RAM on the free tier. The `Dockerfile` in this repository was built and run
+locally as Hugging Face runs it (non-root user 1000, port 7860). All 13 pages, drawing, upload and batch prediction
+passed browser tests, with about 0.6 GB of memory in use.
+
+1. Create a free account at <https://huggingface.co/join>.
+2. Create a token at <https://huggingface.co/settings/tokens>, type **Write** (or a fine-grained token with write
+   access to your Spaces).
+3. Deploy:
+   ```bash
+   pip install huggingface_hub
+   ```
+   ```bash
+   set HF_TOKEN=hf_your_token_here          # Windows (macOS/Linux: export HF_TOKEN=...)
+   ```
+   ```bash
+   python deploy/huggingface_space.py --space purf-ai-lab
+   ```
+4. The first build takes ~5–10 minutes. The app is then live at
+   `https://huggingface.co/spaces/<username>/purf-ai-lab` (direct URL `https://<username>-purf-ai-lab.hf.space`).
+   Re-run step 3 to publish updates. You can revoke the token afterwards.
+
+## Any other Docker host (Render, Railway, Google Cloud Run, a VPS)
+```bash
+docker build -t purf .
+```
+```bash
+docker run -p 7860:7860 purf
+```
+The container honours the `PORT` environment variable that these platforms set.
