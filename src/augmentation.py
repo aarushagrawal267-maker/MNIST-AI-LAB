@@ -46,13 +46,39 @@ def augment_images(
     seed: int = SEED,
 ) -> np.ndarray:
     """Return ``n_variants`` augmented copies per image as float32 (N*n, 28, 28) in [0, 1]."""
+    from .numpy_runtime import HAS_TENSORFLOW
     from .preprocessing import to_cnn_input
+
+    if not HAS_TENSORFLOW:
+        return _augment_opencv(images, n_variants, rotation_degrees, translation, zoom, seed)
 
     x = to_cnn_input(images)
     x = np.repeat(x, n_variants, axis=0)
     aug = build_augmenter(rotation_degrees, translation, zoom, seed=seed)
     out = aug(x, training=True)
     return np.clip(np.asarray(out)[..., 0], 0.0, 1.0)
+
+
+def _augment_opencv(images, n_variants, rotation_degrees, translation, zoom, seed):
+    """Same transformations with OpenCV (used when TensorFlow is unavailable)."""
+    import cv2
+
+    from .preprocessing import normalize
+
+    aug = CFG["augmentation"]
+    rot = aug["rotation_degrees"] if rotation_degrees is None else rotation_degrees
+    tr = aug["translation"] if translation is None else translation
+    zm = aug["zoom"] if zoom is None else zoom
+    rng = np.random.default_rng(seed)
+    out = []
+    for img in normalize(images):
+        for _ in range(n_variants):
+            angle = rng.uniform(-rot, rot)
+            scale = 1.0 + rng.uniform(-zm, zm)
+            m = cv2.getRotationMatrix2D((13.5, 13.5), angle, scale)
+            m[:, 2] += rng.uniform(-tr, tr, size=2) * 28
+            out.append(cv2.warpAffine(img, m, (28, 28), flags=cv2.INTER_LINEAR, borderValue=0.0))
+    return np.clip(np.stack(out), 0.0, 1.0).astype(np.float32)
 
 
 def make_dataset(x, y, batch_size: int, augment: bool = False, shuffle: bool = True, seed: int = SEED):

@@ -6,6 +6,7 @@ import streamlit as st
 
 from src import explainability as X
 from src.config import MODEL_NAME
+from src.numpy_runtime import HAS_TENSORFLOW
 from src.ui import common as C
 from src.ui import theme as T
 
@@ -18,6 +19,10 @@ T.page_header(
 )
 C.require_models()
 splits = C.safe_splits()
+if not HAS_TENSORFLOW:
+    st.info("TensorFlow is not available on this server's Python version, so gradient-based maps (saliency, "
+            "SmoothGrad, Integrated Gradients, Grad-CAM) are disabled. Occlusion sensitivity — which needs no "
+            "gradients — still works. Run the lab on Python 3.10–3.13 for every method.", icon=":material/info:")
 ss = st.session_state
 keras_keys = [k for k, v in C.models().items() if v["family"] == "keras"]
 default = ss.get("xai_model") if ss.get("xai_model") in keras_keys else None
@@ -74,10 +79,13 @@ target = st.selectbox("Explain the score of digit", list(range(10)), index=int(o
 def _maps(model_key: str, img_bytes: bytes, target: int):
     im = np.frombuffer(img_bytes, dtype=np.float32).reshape(28, 28)
     mdl = C.get_model(model_key)
-    sal = X.saliency_map(mdl, im, target)
-    sg = X.smoothgrad(mdl, im, target)
-    ig, ig_err = X.integrated_gradients(mdl, im, target)
-    cam = X.grad_cam(mdl, im, target)
+    sal = sg = ig = cam = None
+    ig_err = float("nan")
+    if HAS_TENSORFLOW:
+        sal = X.saliency_map(mdl, im, target)
+        sg = X.smoothgrad(mdl, im, target)
+        ig, ig_err = X.integrated_gradients(mdl, im, target)
+        cam = X.grad_cam(mdl, im, target)
     occ = X.occlusion_sensitivity(lambda z: C.get_predictor(model_key).predict_array(z), im, target)
     return sal, sg, ig, ig_err, cam, occ
 
@@ -89,7 +97,8 @@ maps = [
     ("SmoothGrad", sg, False, "Saliency averaged over 32 noisy copies — less speckle."),
     ("Integrated Gradients", ig, True, f"Signed: red raises, blue lowers the score. Completeness error {ig_err * 100:.1f}%."),
     ("Grad-CAM", cam, False, f"Class-weighted activations of the last conv layer ({X.find_last_conv(model)}), upsampled."
-     if cam is not None else "Not available: this model has no convolutional layers."),
+     if cam is not None else ("Not available: this model has no convolutional layers." if HAS_TENSORFLOW
+                              else "Requires TensorFlow (Python 3.10–3.13).")),
     ("Occlusion", occ, False, "Drop in probability when a 4×4 patch is blacked out (model-agnostic)."),
 ]
 cols = st.columns(5)
@@ -104,7 +113,8 @@ st.caption("Colour scale: black → purple → orange → yellow = increasing at
            "Integrated Gradients: blue = negative, dark = 0, red = positive.")
 
 T.section("Overlays", "heatmap blended onto the digit")
-ov = [("Saliency", sal), ("SmoothGrad", sg), ("Integrated Gradients |IG|", np.abs(ig)), ("Grad-CAM", cam), ("Occlusion", occ)]
+ov = [("Saliency", sal), ("SmoothGrad", sg), ("Integrated Gradients |IG|", None if ig is None else np.abs(ig)),
+      ("Grad-CAM", cam), ("Occlusion", occ)]
 T.image_grid([T.image_tile(X.overlay(img, m_), n, upscale=8, rgb=True) for n, m_ in ov if m_ is not None], columns=5)
 
 if cam is not None:

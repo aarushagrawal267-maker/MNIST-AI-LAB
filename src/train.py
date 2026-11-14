@@ -263,6 +263,9 @@ def train_and_register(
         )
         params = count_params(res["model"])
         save_history(key, res["history"])
+        from .numpy_runtime import export_numpy, npz_path
+
+        export_numpy(res["model"], npz_path(path))  # TensorFlow-free inference copy
 
     entry = {
         "display_name": display_name or catalog.get("display_name", key),

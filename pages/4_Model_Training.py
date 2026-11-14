@@ -14,6 +14,7 @@ import streamlit as st
 from src import model_manager as mm
 from src.config import CFG, DEMO_MAX_EPOCHS, DEMO_MAX_TRAIN_IMAGES, MODEL_NAME, PUBLIC_DEMO
 from src.experiment_tracker import ExperimentTracker
+from src.numpy_runtime import HAS_TENSORFLOW
 from src.models import CNNConfig
 from src.train import load_history, train_and_register
 from src.ui import common as C
@@ -99,6 +100,13 @@ with tab_train:
         hidden = st.select_slider("ANN hidden layers", ["256", "256/128", "512/256/128"], value="256/128")
         submitted = st.form_submit_button("Start training", type="primary", icon=":material/play_arrow:")
 
+    if not HAS_TENSORFLOW:
+        st.info("TensorFlow is not available on this server's Python version: neural networks (CNN, ANN) cannot be "
+                "trained here, but the classical models can. All pre-trained models still work for prediction.",
+                icon=":material/info:")
+    if submitted and not HAS_TENSORFLOW and mtype in ("cnn", "ann"):
+        st.error("Training neural networks requires TensorFlow (Python 3.10–3.13). Choose a classical model instead.")
+        submitted = False
     lock = _training_lock()
     if submitted and lock.locked():
         st.warning("Another training job is running on this server right now — please try again in a minute.")

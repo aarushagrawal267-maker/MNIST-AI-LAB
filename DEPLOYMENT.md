@@ -18,11 +18,14 @@ about 1 GB of memory.
    | Branch | `claude/keen-hamilton-qdlk3u` (the repository's default branch) |
    | Main file path | `app.py` |
    | App URL (optional) | e.g. `purf-ai-lab` → `https://purf-ai-lab.streamlit.app` |
-4. Open **Advanced settings** → **Python version: 3.12** → **Save**. No secrets are needed.
-   > ⚠️ **Do not leave the default (3.14).** No TensorFlow release supports Python 3.14 yet (TensorFlow 2.21
-   > supports 3.10–3.13), so the build stops with *"Error installing requirements"*. The version cannot be changed
-   > after deployment: if this happens, delete the app (**My apps → ⋮ → Delete**) and create it again with 3.12.
-   > The Python version box is a search field — clear any typed text, then click **3.12** in the list.
+4. *(Optional)* **Advanced settings → Python version: 3.12** gives the full feature set. Any version works:
+   * **3.11 – 3.13:** everything, including explainable-AI gradient maps and in-app neural-network training.
+   * **3.14 (Streamlit's current default):** TensorFlow has no Python 3.14 release yet, so PURF automatically runs its
+     models with a built-in NumPy engine that reproduces TensorFlow's predictions exactly (verified on all 10,000 test
+     images). Drawing, upload, batch prediction, evaluation, comparison and error analysis all work; gradient-based
+     explainability maps and neural-network training show a notice instead (occlusion maps and classical-model
+     training still work).
+   No secrets are needed.
 5. Click **Deploy**. The first build installs TensorFlow and takes about 3–6 minutes. The first visit then downloads
    MNIST from Kaggle (~20 s); after that, pages load from cache.
 
@@ -41,10 +44,9 @@ Push to the deployed branch — Streamlit Cloud redeploys automatically.
 
 ### Notes
 * Free apps sleep after a period without visitors; the first visitor then waits ~30 s for it to wake.
-* If the build fails with a dependency error, check the Python version: 3.11, 3.12 and 3.13 were verified to
-  resolve on Streamlit Cloud's Linux platform; 3.14 cannot work until TensorFlow publishes 3.14 wheels.
-* `requirements.txt` installs the slimmer `tensorflow-cpu` on Linux and the standard `tensorflow` on Windows/macOS;
-  both run on CPU.
+* `requirements.txt` was verified to resolve on Linux x86_64 and ARM64, Windows and macOS for Python 3.11–3.14.
+* The standard `tensorflow` package is used everywhere (CPU). `tensorflow-cpu` was deliberately avoided: it has no
+  ARM64 Linux wheels, which made installation fail on ARM-based cloud servers.
 
 ## Hugging Face Spaces (fully scriptable, free)
 

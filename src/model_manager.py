@@ -152,9 +152,16 @@ def load_model(key: str):
     if not path.exists():
         raise FileNotFoundError(f"Model file missing: {path}")
     if entry["family"] == "keras":
-        import keras
+        from .numpy_runtime import HAS_TENSORFLOW, NumpyModel, npz_path
 
-        model = keras.models.load_model(path, compile=False)
+        if HAS_TENSORFLOW:
+            import keras
+
+            model = keras.models.load_model(path, compile=False)
+        elif npz_path(path).exists():  # TensorFlow unavailable (e.g. Python 3.14): pure-NumPy inference
+            model = NumpyModel(npz_path(path))
+        else:
+            raise RuntimeError(f"TensorFlow is not installed and no NumPy export exists for '{key}'.")
     else:
         import joblib
 
