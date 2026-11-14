@@ -300,6 +300,24 @@ ZIP of real MNIST digits is downloadable from the page.
 * Training on EMNIST and on feedback collected from the drawing page.
 * Ensembles and test-time augmentation; TensorFlow Lite / ONNX export for mobile and browser deployment.
 
+## Verifying TRAX yourself
+```bat
+python -m src.verify
+```
+Runs 20 independent checks against the model file on disk and the raw dataset and writes
+`outputs/reports/trax_verification.json`. Latest run: **20/20 passed**. The run confirms:
+* **Our own model:** epoch-by-epoch training history exists, and the same architecture untrained scores
+  **10.96%** (chance) vs **99.51%** trained. Retraining from scratch with seed 42 reproduced TRAX exactly
+  (19 epochs, 99.17% validation, 99.51% test — `outputs/reports/retrain_from_scratch.json`).
+* **No leakage:** 0 of the 10,000 test images occur in the training data; train/validation splits are disjoint.
+* **Correct outputs:** recomputed test accuracy matches the report, every digit > 98% recall, valid probabilities,
+  deterministic predictions, identical after save/reload.
+* **Robustness:** ±12° rotation 98.0–98.6%, noise 97.7%, thicker strokes 98.6%, off-centre digits through the app
+  pipeline 98.9%, synthetic canvas drawings 120/120.
+* **Known sensitivity:** off-centre 28×28 tensors fed *directly* (bypassing preprocessing) drop to 90.7% at a 2 px
+  shift — TRAX relies on MNIST-style centring, which the app always applies. `cnn_tuned_aug` is the shift-robust
+  alternative (98.9%) and can be selected on every page.
+
 ## Testing
 ```bat
 python -m pytest -q

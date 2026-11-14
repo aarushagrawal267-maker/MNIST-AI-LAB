@@ -1,0 +1,9 @@
+{
+  "val_accuracy": 0.9916666746139526,
+  "epochs": 19,
+  "train_time_s": 379.62720084,
+  "test_accuracy": 0.9951,
+  "shipped_val_accuracy": 0.9916666746139526,
+  "shipped_epochs": 19,
+  "note": "TRAX architecture retrained from scratch (seed 42) on 2026-11-14; shipped model file untouched"
+}

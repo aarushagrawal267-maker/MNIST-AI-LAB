@@ -1,0 +1,125 @@
+{
+  "model_key": "cnn_tuned",
+  "file": "models/cnn_tuned.keras",
+  "sha256": "e78635197444705eaf6469b454bc88982f978a78f1fbfce5173a9d82e7e0d571",
+  "generated_at": "2026-11-14 06:35:48",
+  "test_accuracy": 0.9951,
+  "val_accuracy": 0.9916666666666667,
+  "per_class_accuracy": [
+    0.9989795918367347,
+    0.9991189427312775,
+    0.9961240310077519,
+    0.997029702970297,
+    0.9969450101832994,
+    0.9932735426008968,
+    0.9843423799582464,
+    0.9941634241245136,
+    0.9938398357289527,
+    0.9960356788899901
+  ],
+  "noise_mean_confidence": 1.0,
+  "raw_shift_2px_accuracy": 0.9065,
+  "all_passed": true,
+  "checks": [
+    {
+      "check": "Model file is local and loads from disk",
+      "passed": true,
+      "detail": "models/cnn_tuned.keras \u00b7 2645 KB \u00b7 sha256 e78635197444705e\u2026"
+    },
+    {
+      "check": "Training history exists for this model (it was trained here, epoch by epoch)",
+      "passed": true,
+      "detail": "19 epochs logged; train loss 0.319 \u2192 0.0087, val acc 97.73% \u2192 99.22%"
+    },
+    {
+      "check": "Dataset is the Kaggle MNIST release",
+      "passed": true,
+      "detail": "kaggle:hojjatk/mnist-dataset"
+    },
+    {
+      "check": "Same architecture untrained \u2248 random guessing (proves accuracy comes from training)",
+      "passed": true,
+      "detail": "untrained 10.96% vs trained 99.51%"
+    },
+    {
+      "check": "Weights differ from a fresh initialisation",
+      "passed": true,
+      "detail": "218,778 weights, mean |\u0394| = 0.0243"
+    },
+    {
+      "check": "Test accuracy recomputed from scratch on all 10,000 held-out images",
+      "passed": true,
+      "detail": "99.51% (49 errors)"
+    },
+    {
+      "check": "Recomputed test accuracy matches the saved report",
+      "passed": true,
+      "detail": "recomputed 99.51% vs saved 99.51%"
+    },
+    {
+      "check": "Validation accuracy recomputed",
+      "passed": true,
+      "detail": "99.17% on 6,000 images"
+    },
+    {
+      "check": "Every digit is recognised well (per-class accuracy > 98%)",
+      "passed": true,
+      "detail": "0:99.9% 1:99.9% 2:99.6% 3:99.7% 4:99.7% 5:99.3% 6:98.4% 7:99.4% 8:99.4% 9:99.6%"
+    },
+    {
+      "check": "Test images are not in the training data",
+      "passed": true,
+      "detail": "0 of 10,000 test images also appear in the training set"
+    },
+    {
+      "check": "Validation split is disjoint from the training split",
+      "passed": true,
+      "detail": "54,000 train / 6,000 val indices, overlap 0"
+    },
+    {
+      "check": "Probabilities valid (0\u20131, sum to 1, classes 0\u20139)",
+      "passed": true,
+      "detail": "max |sum\u22121| = 1.19e-07"
+    },
+    {
+      "check": "Deterministic: same input \u2192 same output",
+      "passed": true,
+      "detail": "500 images predicted twice"
+    },
+    {
+      "check": "Save \u2192 reload gives identical predictions",
+      "passed": true,
+      "detail": "round-trip through .keras"
+    },
+    {
+      "check": "Off-centre digits through the app pipeline (re-centred before prediction)",
+      "passed": true,
+      "detail": "98.90% on 1,000 test digits shifted 3 px and upscaled like a canvas drawing"
+    },
+    {
+      "check": "Robust to rotate +12\u00b0",
+      "passed": true,
+      "detail": "98.60% on 2,000 perturbed test images"
+    },
+    {
+      "check": "Robust to rotate \u221212\u00b0",
+      "passed": true,
+      "detail": "98.00% on 2,000 perturbed test images"
+    },
+    {
+      "check": "Robust to gaussian noise \u03c3=25",
+      "passed": true,
+      "detail": "97.65% on 2,000 perturbed test images"
+    },
+    {
+      "check": "Robust to thicker strokes (dilate)",
+      "passed": true,
+      "detail": "98.55% on 2,000 perturbed test images"
+    },
+    {
+      "check": "Synthetic canvas drawings, full preprocessing pipeline",
+      "passed": true,
+      "detail": "100.0% of 120 drawings (10 digits \u00d7 12 position/size/brush variants)"
+    }
+  ]
+}
