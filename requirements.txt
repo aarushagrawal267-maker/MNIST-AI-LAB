@@ -1,8 +1,10 @@
 # PURF lab — tested on Python 3.11 – 3.13 (Windows / macOS / Linux, CPU only; no GPU required)
 # Versions of TensorFlow/Keras and scikit-learn are pinned so the shipped model files load identically.
 
-# Deep learning (on native Windows, the standard `tensorflow` package runs on CPU)
-tensorflow==2.21.0
+# Deep learning — CPU only. Linux (e.g. Streamlit Community Cloud) uses the slimmer CPU build;
+# on Windows/macOS the standard `tensorflow` package already runs on CPU.
+tensorflow-cpu==2.21.0; sys_platform == "linux"
+tensorflow==2.21.0; sys_platform != "linux"
 keras==3.15.1
 
 # Machine learning

@@ -10,6 +10,8 @@
 streamlit run app.py
 ```
 
+**Deploy to a public URL:** see [DEPLOYMENT.md](DEPLOYMENT.md) (Streamlit Community Cloud, free, ~3 minutes).
+
 
 ## Screenshots
 
