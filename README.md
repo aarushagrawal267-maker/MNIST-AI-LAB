@@ -37,6 +37,7 @@ All 16 screenshots (including augmentation, training, experiment tracking and in
 10. [Explainability](#10-explainability-techniques) · 11. [Project architecture](#11-project-architecture) · 12. [Installation (Windows)](#12-installation-windows)
 13. [Dataset setup](#13-dataset-setup) · 14. [Training models](#14-how-to-train-models) · 15. [Draw & predict](#15-how-to-draw-and-predict-digits)
 16. [Upload images](#16-how-to-upload-images) · 17. [Batch prediction](#17-how-to-run-batch-predictions) · 18. [Limitations](#18-limitations) · 19. [Future improvements](#19-future-improvements)
+· [Verifying TRAX](#verifying-trax-yourself) · [Testing](#testing) · [License](#license)
 
 Full experimental results: **[PROJECT_REPORT.md](PROJECT_REPORT.md)**.
 
@@ -327,9 +328,13 @@ Runs 20 independent checks against the model file on disk and the raw dataset an
 ```bat
 python -m pytest -q
 ```
-Current result: **53 passed**.
+Current result: **57 passed** (Python 3.13, TensorFlow 2.21, CPU, ~35 s).
 The suite covers dataset loading and dimensions, label validation, IDX parsing, stratified splitting,
 normalisation, resizing, centring, polarity, transparency, noise removal, model architectures, a short real training
 run, save/load round-trips for Keras and Joblib models, prediction validity (classes 0–9, probabilities in [0, 1]
 summing to 1), drawn-digit recognition, batch and ZIP handling, explainability outputs and clear error messages for
 invalid images.
+
+## License
+Released under the [MIT License](LICENSE). The MNIST dataset is not redistributed here; it is downloaded from
+Kaggle at runtime and remains subject to its own terms.
