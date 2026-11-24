@@ -137,10 +137,10 @@ if ss.draw_history:
                                      bad=h["feedback"] is False), unsafe_allow_html=True)
             if h["feedback"] is None:
                 a, b = st.columns(2)
-                if a.button("✓", key=f"ok_{h['uid']}", help="Prediction was correct", use_container_width=True):
+                if a.button("✓", key=f"ok_{h['uid']}", help="Prediction was correct", width="stretch"):
                     h["feedback"] = True
                     st.rerun()
-                if b.button("✗", key=f"no_{h['uid']}", help="Prediction was wrong", use_container_width=True):
+                if b.button("✗", key=f"no_{h['uid']}", help="Prediction was wrong", width="stretch"):
                     h["feedback"] = False
                     st.rerun()
     if st.button("Clear history", icon=":material/delete_sweep:"):

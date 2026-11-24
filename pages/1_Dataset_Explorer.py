@@ -68,7 +68,7 @@ with tabs[0]:
     rep = _validation()
     df = pd.DataFrame(rep["checks"])
     df["status"] = np.where(df["passed"], "✅ pass", "❌ fail")
-    st.dataframe(df[["status", "check", "detail"]], hide_index=True, use_container_width=True)
+    st.dataframe(df[["status", "check", "detail"]], hide_index=True, width="stretch")
     st.caption(f"Source: **{splits.source}** · cached at `data/processed/mnist.npz` · "
                f"{'all checks passed' if rep['all_passed'] else 'some checks failed'}")
 
@@ -132,7 +132,7 @@ with tabs[3]:
     counts = pd.DataFrame({s: stats["class_counts"][s] for s in ("train", "val", "test")})
     counts.index.name = "digit"
     with st.expander("Counts table"):
-        st.dataframe(counts.T, use_container_width=True)
+        st.dataframe(counts.T, width="stretch")
 
     a, b = st.columns(2)
     with a:

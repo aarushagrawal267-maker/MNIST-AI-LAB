@@ -139,8 +139,8 @@ with tab_train:
             ph[2].markdown(T.metric_card("Val. loss", f"{logs['val_loss']:.4f}", ""), unsafe_allow_html=True)
             ph[3].markdown(T.metric_card("Learning rate", f"{logs['learning_rate']:.1e}", ""), unsafe_allow_html=True)
             acc, loss, _ = C.history_figs(logs_hist)
-            acc_ph.plotly_chart(acc, use_container_width=True, key=f"live_acc_{epoch}")
-            loss_ph.plotly_chart(loss, use_container_width=True, key=f"live_loss_{epoch}")
+            acc_ph.plotly_chart(acc, key=f"live_acc_{epoch}")
+            loss_ph.plotly_chart(loss, key=f"live_loss_{epoch}")
 
         def on_batch(batch_i, logs):
             done = len(logs_hist["loss"])
@@ -187,7 +187,7 @@ with tab_exp:
                 "epochs", "epochs_trained", "dropout", "augmentation", "train_samples", "val_accuracy", "val_loss",
                 "train_time_s", "params"]
         st.dataframe(
-            view[cols].sort_values("val_accuracy", ascending=False), hide_index=True, use_container_width=True,
+            view[cols].sort_values("val_accuracy", ascending=False), hide_index=True, width="stretch",
             column_config={
                 "val_accuracy": st.column_config.ProgressColumn("val accuracy", min_value=0.0, max_value=1.0, format="%.4f"),
                 "train_time_s": st.column_config.NumberColumn("train time (s)", format="%.1f"),
@@ -262,7 +262,7 @@ with tab_models:
             "parameters": v.get("params") or None, "train time (s)": v.get("train_time_s"),
             "file": v["path"], "custom": bool(v.get("custom")),
         })
-    st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True,
+    st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch",
                  column_config={"val accuracy": st.column_config.NumberColumn(format="%.4f"),
                                 "train time (s)": st.column_config.NumberColumn(format="%.1f")})
     a, b, c = st.columns(3)

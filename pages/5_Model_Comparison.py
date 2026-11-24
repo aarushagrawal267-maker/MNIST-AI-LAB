@@ -57,7 +57,7 @@ pct = st.column_config.NumberColumn(format="%.2f%%")
 v = df[["model", "family", "architecture", "val_acc", "val_prec", "val_rec", "val_f1", "val_loss", "train_time_s", "params"]].copy()
 for c in ("val_acc", "val_prec", "val_rec", "val_f1"):
     v[c] *= 100
-st.dataframe(v, hide_index=True, use_container_width=True, column_config={
+st.dataframe(v, hide_index=True, width="stretch", column_config={
     "val_acc": st.column_config.NumberColumn("accuracy", format="%.2f%%"), "val_prec": st.column_config.NumberColumn("precision (macro)", format="%.2f%%"),
     "val_rec": st.column_config.NumberColumn("recall (macro)", format="%.2f%%"), "val_f1": st.column_config.NumberColumn("F1 (macro)", format="%.2f%%"),
     "val_loss": st.column_config.NumberColumn("log loss", format="%.4f"), "train_time_s": st.column_config.NumberColumn("training time (s)", format="%.1f"),
@@ -66,7 +66,7 @@ T.section("Final test results", "held-out 10,000 images — reported, never used
 t = df[["model", "test_acc", "test_prec", "test_rec", "test_f1", "ms_per_img", "latency_ms"]].copy()
 for c in ("test_acc", "test_prec", "test_rec", "test_f1"):
     t[c] *= 100
-st.dataframe(t, hide_index=True, use_container_width=True, column_config={
+st.dataframe(t, hide_index=True, width="stretch", column_config={
     "test_acc": st.column_config.NumberColumn("accuracy", format="%.2f%%"), "test_prec": st.column_config.NumberColumn("precision (macro)", format="%.2f%%"),
     "test_rec": st.column_config.NumberColumn("recall (macro)", format="%.2f%%"), "test_f1": st.column_config.NumberColumn("F1 (macro)", format="%.2f%%"),
     "ms_per_img": st.column_config.NumberColumn("inference ms / image (batched)", format="%.4f"),

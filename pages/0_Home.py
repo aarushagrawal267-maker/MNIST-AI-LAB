@@ -134,4 +134,4 @@ links = [
 ]
 cols = st.columns(6)
 for c, (path, lbl, icon) in zip(cols, links):
-    c.page_link(path, label=lbl, icon=icon, use_container_width=True)
+    c.page_link(path, label=lbl, icon=icon, width="stretch")

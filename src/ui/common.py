@@ -214,7 +214,7 @@ def heat_image(img: np.ndarray, colorscale="Inferno", height: int = 260, title: 
 
 
 def plot(fig, key: str | None = None) -> None:
-    st.plotly_chart(fig, use_container_width=True, config=T.PLOTLY_CONFIG, key=key)
+    st.plotly_chart(fig, config=T.PLOTLY_CONFIG, key=key)
 
 
 def sidebar_status() -> None:

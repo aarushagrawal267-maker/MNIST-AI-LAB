@@ -76,7 +76,7 @@ if ok:
         "confidence": r["confidence"], "runner-up": r["second_choice"], "runner-up prob.": r["second_prob"],
         "certainty": r["certainty"], "warnings": r["warnings"],
     } for r in ok])
-    st.dataframe(df, hide_index=True, use_container_width=True, row_height=58, column_config={
+    st.dataframe(df, hide_index=True, width="stretch", row_height=58, column_config={
         "preview": st.column_config.ImageColumn("28×28 input", width="small"),
         "confidence": st.column_config.ProgressColumn(min_value=0.0, max_value=1.0, format="%.4f"),
         "runner-up prob.": st.column_config.NumberColumn(format="%.4f"),
@@ -110,4 +110,4 @@ if ok:
 
 if bad:
     T.section("Skipped files")
-    st.dataframe(pd.DataFrame([{"file": r["file"], "reason": r["error"]} for r in bad]), hide_index=True, use_container_width=True)
+    st.dataframe(pd.DataFrame([{"file": r["file"], "reason": r["error"]} for r in bad]), hide_index=True, width="stretch")

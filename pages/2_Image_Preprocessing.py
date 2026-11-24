@@ -51,7 +51,7 @@ with tab1:
         C.plot(T.style_fig(fig, 260, f"784-dimensional input for logistic regression / k-NN / SVM"), key="flat")
     with b:
         oh = one_hot(np.array([lab]))[0].astype(int)
-        st.dataframe(pd.DataFrame([oh], columns=[str(i) for i in range(10)], index=["one-hot"]), use_container_width=True)
+        st.dataframe(pd.DataFrame([oh], columns=[str(i) for i in range(10)], index=["one-hot"]), width="stretch")
         st.caption("Neural networks here use **sparse categorical cross-entropy**, so the integer label is used directly; "
                    "the equivalent one-hot vector is shown for reference.")
 

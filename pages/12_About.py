@@ -56,7 +56,7 @@ digraph G {
   kaggle -> loader -> val; loader -> eda; loader -> prep -> train; models -> train -> reg; train -> tracker;
   reg -> evaluate; reg -> pred; ip -> pred; canvas -> ip; pred -> ui; evaluate -> ui; xai -> ui; eda -> ui; tracker -> ui;
 }
-""", use_container_width=True)
+""", width="stretch")
 
 T.section("Technology")
 cols = st.columns(4)

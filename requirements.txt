@@ -28,7 +28,7 @@ seaborn>=0.13
 plotly>=5.20
 
 # Web application
-streamlit>=1.45,<2
+streamlit>=1.49,<2
 
 # Testing
 pytest>=8.0

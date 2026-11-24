@@ -66,7 +66,7 @@ p = result.processed
 left, mid, right = st.columns([1.1, 1, 1.4], gap="large")
 with left:
     T.section("Original")
-    st.image(up.getvalue(), use_container_width=True)
+    st.image(up.getvalue(), width="stretch")
     st.caption(f"{p.info['input_shape'][1]}×{p.info['input_shape'][0]} px · "
                f"{'inverted (dark ink on light background detected)' if p.inverted else 'kept (light ink on dark background)'}")
 with mid:

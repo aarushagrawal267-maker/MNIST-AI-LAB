@@ -66,7 +66,7 @@ with b:
     tc = top_confusions(m["confusion_matrix"], 6)
     st.markdown("**Most frequent confusions**")
     st.dataframe(pd.DataFrame([{"actual": t["actual"], "predicted as": t["predicted"], "count": t["count"]} for t in tc]),
-                 hide_index=True, use_container_width=True)
+                 hide_index=True, width="stretch")
 
 T.section("Classification report")
 rep = m["classification_report"]
@@ -77,7 +77,7 @@ for avg in ("macro avg", "weighted avg"):
     rows.append({"digit": avg, "precision": rep[avg]["precision"], "recall": rep[avg]["recall"],
                  "f1-score": rep[avg]["f1-score"], "support": int(rep[avg]["support"]), "accuracy": None})
 fmt = st.column_config.ProgressColumn(min_value=0.9 if m["accuracy"] > 0.95 else 0.0, max_value=1.0, format="%.4f")
-st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True,
+st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch",
              column_config={"precision": fmt, "recall": fmt, "f1-score": fmt, "accuracy": st.column_config.NumberColumn(format="%.4f")})
 
 # ------------------------------------------------------------------ curves
@@ -120,7 +120,7 @@ with b:
 auc_df = pd.DataFrame({"digit": list(range(10)), "ROC AUC": [roc[c]["auc"] for c in range(10)],
                        "average precision": [prc[c]["ap"] for c in range(10)]})
 with st.expander("AUC / AP table"):
-    st.dataframe(auc_df, hide_index=True, use_container_width=True,
+    st.dataframe(auc_df, hide_index=True, width="stretch",
                  column_config={"ROC AUC": st.column_config.NumberColumn(format="%.6f"),
                                 "average precision": st.column_config.NumberColumn(format="%.6f")})
 
@@ -146,7 +146,7 @@ with a:
     fig.update_layout(xaxis_title="mean confidence in bin (%)", yaxis_title="actual accuracy (%)")
     C.plot(T.style_fig(fig, 340), key="cal")
 with b:
-    st.dataframe(cal, hide_index=True, use_container_width=True,
+    st.dataframe(cal, hide_index=True, width="stretch",
                  column_config={"mean conf": st.column_config.NumberColumn(format="%.2f"),
                                 "accuracy": st.column_config.NumberColumn(format="%.2f")})
 st.download_button("Download metrics (JSON)", json.dumps(m, indent=2).encode(), f"{key}_{split}_metrics.json",
