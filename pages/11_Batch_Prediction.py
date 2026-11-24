@@ -22,7 +22,6 @@ T.page_header(
     "ready to export as CSV. Invalid files are skipped and reported, never crash the batch.",
 )
 C.require_models()
-splits = C.safe_splits()
 
 c1, c2 = st.columns([2, 1.2])
 with c1:
@@ -30,23 +29,25 @@ with c1:
 with c2:
     model_key = C.model_select("Model", key="batch_model")
     invert = st.radio("Polarity", ["auto", "yes", "no"], horizontal=True)
-    st.caption("Need test data? Download a ZIP of 24 real MNIST test digits:")
+    splits = C.optional_splits()  # only needed for the demo ZIP; prediction works without it
+    if splits is not None:
+        st.caption("Need test data? Download a ZIP of 24 real MNIST test digits:")
 
-    @st.cache_data
-    def demo_zip(seed: int = 0) -> bytes:
-        rng = np.random.default_rng(seed)
-        idx = rng.choice(len(splits.y_test), 24, replace=False)
-        buf = io.BytesIO()
-        with zipfile.ZipFile(buf, "w") as zf:
-            for k, i in enumerate(idx):
-                img = 255 - np.kron(splits.x_test[i], np.ones((8, 8), dtype=np.uint8))
-                b = io.BytesIO()
-                Image.fromarray(img).save(b, format="PNG")
-                zf.writestr(f"digits/{k:02d}_label{splits.y_test[i]}.png", b.getvalue())
-            zf.writestr("digits/readme.txt", "not an image - will be reported as unsupported")
-        return buf.getvalue()
+        @st.cache_data
+        def demo_zip(seed: int = 0) -> bytes:
+            rng = np.random.default_rng(seed)
+            idx = rng.choice(len(splits.y_test), 24, replace=False)
+            buf = io.BytesIO()
+            with zipfile.ZipFile(buf, "w") as zf:
+                for k, i in enumerate(idx):
+                    img = 255 - np.kron(splits.x_test[i], np.ones((8, 8), dtype=np.uint8))
+                    b = io.BytesIO()
+                    Image.fromarray(img).save(b, format="PNG")
+                    zf.writestr(f"digits/{k:02d}_label{splits.y_test[i]}.png", b.getvalue())
+                zf.writestr("digits/readme.txt", "not an image - will be reported as unsupported")
+            return buf.getvalue()
 
-    st.download_button("Demo ZIP (24 digits)", demo_zip(), "purf_demo_digits.zip", "application/zip", icon=":material/folder_zip:")
+        st.download_button("Demo ZIP (24 digits)", demo_zip(), "purf_demo_digits.zip", "application/zip", icon=":material/folder_zip:")
 
 if not files:
     st.markdown(

@@ -86,9 +86,9 @@ if ms:
             "is never used for tuning — it is only scored once, for the final report.", "⚖️"), unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- live strip
-if prod:
+splits = C.optional_splits() if prod else None  # the rest of the page does not need the dataset
+if prod and splits is not None:
     T.section(f"{MODEL_NAME}, live", "random digits from the held-out test set")
-    splits = C.safe_splits()
     if "home_seed" not in st.session_state:
         st.session_state.home_seed = 7
     if st.button("Shuffle digits", icon=":material/shuffle:"):

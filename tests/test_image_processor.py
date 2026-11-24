@@ -116,3 +116,12 @@ def test_naive_resize_differs_from_pipeline():
     proper = preprocess_digit(rgba).image
     assert naive.shape == proper.shape == (28, 28)
     assert (naive > 0.2).sum() < (proper > 0.2).sum()  # naive shrinks the digit to few pixels
+
+
+def test_decompression_bomb_has_clear_error(monkeypatch):
+    """A small file that decodes to a huge image is rejected with a user-facing message."""
+    monkeypatch.setattr(Image, "MAX_IMAGE_PIXELS", 1000)  # anything > 2000 px raises DecompressionBombError
+    buf = io.BytesIO()
+    Image.new("L", (100, 100), 0).save(buf, format="PNG")
+    with pytest.raises(ImageProcessingError, match="too many pixels"):
+        preprocess_digit(buf.getvalue())

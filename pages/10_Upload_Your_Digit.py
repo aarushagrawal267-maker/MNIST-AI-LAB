@@ -19,7 +19,6 @@ T.page_header(
     "converted to grayscale, cropped to the digit, size-normalised, centred and normalised exactly like MNIST.",
 )
 C.require_models()
-splits = C.safe_splits()
 
 with st.expander("What images work best?", expanded=False):
     st.markdown("""
@@ -40,14 +39,16 @@ with c2:
     model_key = C.model_select("Model", key="up_model")
 with c3:
     st.markdown("**No image at hand?**")
-    st.caption("Download a real MNIST test digit (rendered large on white paper) and upload it back.")
-    i = int(np.random.default_rng(st.session_state.get("up_seed", 0)).integers(len(splits.y_test)))
-    sample = Image.fromarray(255 - np.kron(splits.x_test[i], np.ones((12, 12), dtype=np.uint8)))
-    buf = io.BytesIO()
-    sample.save(buf, format="PNG")
-    if st.download_button(f"Sample digit ({splits.y_test[i]})", buf.getvalue(), f"mnist_test_{i}_label{splits.y_test[i]}.png",
-                          "image/png", icon=":material/download:"):
-        st.session_state["up_seed"] = st.session_state.get("up_seed", 0) + 1
+    splits = C.optional_splits()  # only needed for the sample download; prediction works without it
+    if splits is not None:
+        st.caption("Download a real MNIST test digit (rendered large on white paper) and upload it back.")
+        i = int(np.random.default_rng(st.session_state.get("up_seed", 0)).integers(len(splits.y_test)))
+        sample = Image.fromarray(255 - np.kron(splits.x_test[i], np.ones((12, 12), dtype=np.uint8)))
+        buf = io.BytesIO()
+        sample.save(buf, format="PNG")
+        if st.download_button(f"Sample digit ({splits.y_test[i]})", buf.getvalue(),
+                              f"mnist_test_{i}_label{splits.y_test[i]}.png", "image/png", icon=":material/download:"):
+            st.session_state["up_seed"] = st.session_state.get("up_seed", 0) + 1
 
 if up is None:
     st.markdown(

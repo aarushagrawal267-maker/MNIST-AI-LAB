@@ -35,6 +35,22 @@ def safe_splits():
         st.stop()
 
 
+def optional_splits():
+    """Return splits, or ``None`` (with a short note) when MNIST is unavailable.
+
+    For pages where the dataset is only a convenience (sample downloads, demo strips) so that
+    predicting on the user's own images keeps working without the dataset.
+    """
+    from ..data_loader import DatasetUnavailableError
+
+    try:
+        return get_splits()
+    except DatasetUnavailableError:
+        st.caption("MNIST sample digits are unavailable (the dataset could not be downloaded); "
+                   "predictions on your own images still work.")
+        return None
+
+
 @st.cache_resource(show_spinner="Loading model…")
 def _load_predictor(key: str, mtime: float):
     from ..prediction import Predictor
@@ -43,11 +59,23 @@ def _load_predictor(key: str, mtime: float):
 
 
 def get_predictor(key: str | None = None):
+    """Return a cached Predictor; if the model cannot be loaded, show a clear message and stop the page."""
     key = key or mm.production_key()
     if key is None:
         return None
-    path = mm.abs_path(mm.get_entry(key)["path"])
-    return _load_predictor(key, path.stat().st_mtime if path.exists() else 0.0)
+    error = None
+    try:
+        path = mm.abs_path(mm.get_entry(key)["path"])
+        return _load_predictor(key, path.stat().st_mtime if path.exists() else 0.0)
+    except Exception as exc:  # missing/corrupt model file, incompatible TF/Keras, unregistered key
+        error = exc
+    st.error(
+        f"**The model '{key}' could not be loaded.** {type(error).__name__}: {error}\n\n"
+        "The model file may be missing or damaged, or the installed TensorFlow/Keras/scikit-learn versions may "
+        "not match the ones in requirements.txt. Reinstall with `pip install -r requirements.txt`, restore the "
+        "`models/` folder from the repository, or retrain with `python -m src.train --all`."
+    )
+    st.stop()
 
 
 def get_model(key: str):

@@ -169,7 +169,7 @@ Saliency, SmoothGrad, Integrated Gradients (64 steps, completeness error reporte
 
 Recorded 2026-11-13:
 
-* **Automated tests (pytest)** — 57 passed, 0 failed (tests/: data, preprocessing, image processor, models, predictions, explainability)
+* **Automated tests (pytest)** — 61 passed, 0 failed (tests/: data, preprocessing, image processor, models, predictions, explainability)
 * **Browser: all pages** — 13/13 pages rendered in headless Chromium with no Python exceptions and no JavaScript errors
 * **Browser: Draw Your Digit** — digits 0, 1, 2, 3, 4 and 7 drawn with real mouse strokes on the canvas; all 6 predicted correctly by TRAX (100.0% displayed confidence)
 * **Browser: Upload Your Digit** — an 800x600 JPEG 'photo' of a dark pen 7 on unevenly lit paper was predicted as 7; a corrupt PNG produced the message 'The file could not be decoded as an image...'

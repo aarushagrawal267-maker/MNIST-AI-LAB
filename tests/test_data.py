@@ -83,3 +83,48 @@ def test_stratified_subset(splits):
     x, y = stratified_subset(splits.x_train, splits.y_train, 1000)
     assert len(x) == len(y) == 1000
     assert np.bincount(y, minlength=10).min() > 80
+
+
+def test_corrupt_split_cache_is_rebuilt(tmp_path, monkeypatch, splits):
+    """A truncated split_indices.npz must not break every page; the same split is recomputed."""
+    import src.data_loader as dl
+
+    bad = tmp_path / "split_indices.npz"
+    bad.write_bytes(b"PK\x03\x04 truncated")
+    monkeypatch.setattr(dl, "SPLIT_PATH", bad)
+    s = get_splits()
+    np.testing.assert_array_equal(s.val_idx, splits.val_idx)
+    np.testing.assert_array_equal(s.train_idx, splits.train_idx)
+    with np.load(bad) as npz:  # rewritten as a valid cache
+        np.testing.assert_array_equal(npz["val_idx"], splits.val_idx)
+
+
+def test_split_cache_from_other_dataset_is_ignored(tmp_path, monkeypatch, splits):
+    """Cached indices that do not partition the current training set are not reused."""
+    import src.data_loader as dl
+
+    stale = tmp_path / "split_indices.npz"
+    np.savez(stale, train_idx=np.arange(10), val_idx=np.arange(10, 12), val_size=0.1, seed=dl.SEED)
+    monkeypatch.setattr(dl, "SPLIT_PATH", stale)
+    s = get_splits()
+    assert len(s.train_idx) + len(s.val_idx) == 60000
+    assert len(np.intersect1d(s.train_idx, s.val_idx)) == 0
+
+
+def test_corrupt_dataset_cache_falls_back(tmp_path, monkeypatch):
+    """An unreadable mnist.npz cache is ignored instead of raising on every load."""
+    import src.data_loader as dl
+
+    good = load_mnist(verbose=False)
+    bad = tmp_path / "mnist.npz"
+    bad.write_bytes(b"not a zip")
+    monkeypatch.setattr(dl, "CACHE_PATH", bad)
+    monkeypatch.setattr(dl, "find_idx_files", lambda root: None)
+    monkeypatch.setattr(dl, "download_from_kaggle", lambda verbose=True: None)
+    monkeypatch.setattr(dl, "download_from_keras", lambda verbose=True: {
+        "x_train": good.x_train, "y_train": good.y_train, "x_test": good.x_test, "y_test": good.y_test})
+    d = load_mnist(verbose=False)
+    assert d.x_train.shape == (60000, 28, 28)
+    with np.load(bad) as npz:  # cache rewritten atomically and readable
+        assert npz["x_test"].shape == (10000, 28, 28)
+    assert not list(tmp_path.glob("*.tmp"))

@@ -77,6 +77,10 @@ def load_image(source: Any) -> np.ndarray:
         try:
             img = Image.open(io.BytesIO(data))
             img.load()
+        except Image.DecompressionBombError as exc:  # tiny file that decodes to a gigantic image
+            raise ImageProcessingError(
+                "The image has far too many pixels to process safely. Please upload a smaller image."
+            ) from exc
         except (UnidentifiedImageError, OSError) as exc:
             raise ImageProcessingError(
                 "The file could not be decoded as an image. Please upload a valid PNG, JPG or JPEG."

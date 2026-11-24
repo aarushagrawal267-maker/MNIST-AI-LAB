@@ -11,6 +11,7 @@ validation set is a stratified split of the 60,000 training images.
 from __future__ import annotations
 
 import gzip
+import os
 import shutil
 import struct
 from dataclasses import dataclass
@@ -48,6 +49,18 @@ Then restart the app or rerun the training command.
 
 class DatasetUnavailableError(RuntimeError):
     """Raised when MNIST cannot be downloaded or found locally."""
+
+
+def _atomic_savez(path: Path, compressed: bool = False, **arrays) -> None:
+    """Write an .npz via a temp file + rename so readers never see a half-written cache
+    (e.g. two Streamlit sessions downloading at once, or an interrupted first run)."""
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+    try:
+        with open(tmp, "wb") as fh:
+            (np.savez_compressed if compressed else np.savez)(fh, **arrays)
+        os.replace(tmp, path)
+    finally:
+        tmp.unlink(missing_ok=True)
 
 
 @dataclass
@@ -178,10 +191,14 @@ def load_mnist(force_reload: bool = False, verbose: bool = True) -> MnistData:
     Order: local cache -> IDX files in data/raw -> Kaggle download -> Keras mirror.
     """
     if CACHE_PATH.exists() and not force_reload:
-        with np.load(CACHE_PATH, allow_pickle=False) as npz:
-            return MnistData(
-                npz["x_train"], npz["y_train"], npz["x_test"], npz["y_test"], str(npz["source"])
-            )
+        try:
+            with np.load(CACHE_PATH, allow_pickle=False) as npz:
+                return MnistData(
+                    npz["x_train"], npz["y_train"], npz["x_test"], npz["y_test"], str(npz["source"])
+                )
+        except Exception as exc:  # truncated/corrupt cache: rebuild it instead of failing forever
+            if verbose:
+                print(f"[data] Ignoring unreadable cache {CACHE_PATH.name}: {exc}")
 
     arrays: dict[str, np.ndarray] | None = None
     source = ""
@@ -208,8 +225,9 @@ def load_mnist(force_reload: bool = False, verbose: bool = True) -> MnistData:
     from .data_validation import assert_valid
 
     assert_valid(data)
-    np.savez_compressed(
+    _atomic_savez(
         CACHE_PATH,
+        compressed=True,
         x_train=data.x_train,
         y_train=data.y_train,
         x_test=data.x_test,
@@ -231,17 +249,24 @@ def get_splits(
     data = data or load_mnist(verbose=False)
 
     train_idx = val_idx = None
+    n = len(data.y_train)
     if SPLIT_PATH.exists():
-        with np.load(SPLIT_PATH) as npz:
-            if float(npz["val_size"]) == val_size and int(npz["seed"]) == seed:
-                train_idx, val_idx = npz["train_idx"], npz["val_idx"]
+        try:
+            with np.load(SPLIT_PATH) as npz:
+                if float(npz["val_size"]) == val_size and int(npz["seed"]) == seed:
+                    t, v = npz["train_idx"], npz["val_idx"]
+                    # Only reuse indices that still form a disjoint partition of this training set.
+                    if len(t) + len(v) == n and np.array_equal(np.union1d(t, v), np.arange(n)):
+                        train_idx, val_idx = t, v
+        except Exception:  # unreadable cache -> recompute (deterministic for a fixed seed)
+            pass
     if train_idx is None:
-        idx = np.arange(len(data.y_train))
+        idx = np.arange(n)
         train_idx, val_idx = train_test_split(
             idx, test_size=val_size, random_state=seed, stratify=data.y_train
         )
         train_idx, val_idx = np.sort(train_idx), np.sort(val_idx)
-        np.savez(SPLIT_PATH, train_idx=train_idx, val_idx=val_idx, val_size=val_size, seed=seed)
+        _atomic_savez(SPLIT_PATH, train_idx=train_idx, val_idx=val_idx, val_size=val_size, seed=seed)
 
     return MnistSplits(
         x_train=data.x_train[train_idx],
