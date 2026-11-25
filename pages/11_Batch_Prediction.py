@@ -11,7 +11,7 @@ import streamlit as st
 from PIL import Image
 
 from src.config import MODEL_NAME
-from src.prediction import expand_uploads
+from src.prediction import batch_export_frame, expand_uploads
 from src.ui import common as C
 from src.ui import theme as T
 
@@ -82,13 +82,7 @@ if ok:
         "confidence": st.column_config.ProgressColumn(min_value=0.0, max_value=1.0, format="%.4f"),
         "runner-up prob.": st.column_config.NumberColumn(format="%.4f"),
     })
-    export = pd.DataFrame([{
-        "file": r["file"], "status": r["status"], "prediction": r.get("prediction"), "confidence": r.get("confidence"),
-        "second_choice": r.get("second_choice"), "second_prob": r.get("second_prob"),
-        "third_choice": r.get("third_choice"), "third_prob": r.get("third_prob"), "certainty": r.get("certainty"),
-        "warnings": r.get("warnings", ""), "error": r.get("error", ""),
-        **({f"p_{d}": float(r["probabilities"][d]) for d in range(10)} if r["status"] == "ok" else {}),
-    } for r in rows])
+    export = batch_export_frame(rows)
     st.download_button("Export results (CSV)", export.to_csv(index=False).encode(), "purf_batch_predictions.csv", "text/csv",
                        type="primary", icon=":material/download:")
     a, b = st.columns(2)

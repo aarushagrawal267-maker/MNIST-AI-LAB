@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 import numpy as np
+import pandas as pd
 
 from . import model_manager as mm
 from .evaluate import predict_proba
@@ -168,3 +169,23 @@ def expand_uploads(files: Iterable[tuple[str, bytes]]) -> tuple[list[tuple[str, 
             rejected.append({"file": name, "status": "error",
                              "error": f"Unsupported file type '{ext or 'none'}'. Use PNG, JPG, JPEG or ZIP."})
     return items, rejected
+
+
+EXPORT_DIGIT_COLUMNS = ("prediction", "second_choice", "third_choice")
+
+
+def batch_export_frame(rows: list[dict[str, Any]]) -> pd.DataFrame:
+    """CSV-ready table of batch results: one row per file, skipped files included.
+
+    Digit columns use pandas' nullable integer type, so a skipped file leaves them empty
+    instead of turning every prediction into a float such as ``7.0``.
+    """
+    df = pd.DataFrame([{
+        "file": r["file"], "status": r["status"], "prediction": r.get("prediction"),
+        "confidence": r.get("confidence"), "second_choice": r.get("second_choice"),
+        "second_prob": r.get("second_prob"), "third_choice": r.get("third_choice"),
+        "third_prob": r.get("third_prob"), "certainty": r.get("certainty"),
+        "warnings": r.get("warnings", ""), "error": r.get("error", ""),
+        **({f"p_{d}": float(r["probabilities"][d]) for d in range(10)} if r["status"] == "ok" else {}),
+    } for r in rows])
+    return df.astype({c: "Int64" for c in EXPORT_DIGIT_COLUMNS if c in df.columns})

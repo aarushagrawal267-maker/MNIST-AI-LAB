@@ -1,4 +1,5 @@
 """End-to-end predictions with the trained models (TRAX and all registered models)."""
+import csv
 import io
 import zipfile
 
@@ -8,7 +9,7 @@ from PIL import Image
 
 from src import model_manager as mm
 from src.evaluate import accuracy_ci, compute_metrics, mcnemar_exact, predict_proba
-from src.prediction import Predictor, expand_uploads
+from src.prediction import Predictor, batch_export_frame, expand_uploads
 from tests.conftest import draw_digit
 
 
@@ -61,6 +62,18 @@ def test_batch_prediction_mixed_inputs(predictor):
     for r in rows:
         if r["status"] == "ok":
             assert np.isclose(r["probabilities"].sum(), 1, atol=1e-5)
+
+
+def test_batch_export_keeps_digits_as_integers(predictor):
+    """A skipped file in the batch must not turn exported digits into floats like 7.0."""
+    good = io.BytesIO()
+    Image.fromarray(draw_digit(7)).save(good, format="PNG")
+    rows = predictor.predict_batch([("seven.png", good.getvalue()), ("broken.png", b"not an image")])
+    exported = csv.DictReader(io.StringIO(batch_export_frame(rows).to_csv(index=False)))
+    by_file = {r["file"]: r for r in exported}
+    assert by_file["seven.png"]["prediction"] == "7"
+    assert by_file["seven.png"]["second_choice"].isdigit()
+    assert by_file["broken.png"]["status"] == "error" and by_file["broken.png"]["prediction"] == ""
 
 
 def test_zip_expansion_filters_files():
