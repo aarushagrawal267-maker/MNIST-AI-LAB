@@ -3,7 +3,7 @@
   "checks": [
     {
       "check": "Automated tests (pytest)",
-      "result": "64 passed, 0 failed on 2026-11-25 (tests/: data, preprocessing, image processor, models, predictions, evaluation statistics, explainability)"
+      "result": "65 passed, 0 failed on 2026-11-25 (tests/: data, preprocessing, image processor, models, predictions, evaluation statistics, explainability, deploy secret exclusion)"
     },
     {
       "check": "Browser: all pages",

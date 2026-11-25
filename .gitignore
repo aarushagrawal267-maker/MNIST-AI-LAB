@@ -26,3 +26,22 @@ Thumbs.db
 outputs/reports/metrics/custom_*
 outputs/reports/predictions/custom_*
 outputs/reports/histories/custom_*
+
+# Secrets and credentials (never commit; use env vars or the host's secret store)
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+kaggle.json
+.kaggle/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Dependencies and local data dumps
+node_modules/
+*.sqlite
+*.sqlite3
+*.db
+*.dump

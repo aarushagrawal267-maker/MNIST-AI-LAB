@@ -17,6 +17,13 @@ ROOT = Path(__file__).resolve().parent.parent
 INCLUDE = ["app.py", "config.yaml", "requirements.txt", "Dockerfile", ".dockerignore", "src", "pages", "assets",
            ".streamlit", "models", "outputs", "data/raw/.gitkeep", "data/processed/.gitkeep"]
 EXCLUDE_PARTS = {"__pycache__", "custom", ".ipynb_checkpoints"}
+# Local secret files must never be uploaded to a (possibly public) Space.
+SECRET_NAMES = {"secrets.toml", "kaggle.json"}
+
+
+def _skip(name: str) -> bool:
+    return (name in EXCLUDE_PARTS or name.endswith(".pyc") or name in SECRET_NAMES
+            or name == ".env" or name.startswith(".env."))
 
 SPACE_README = """---
 title: PURF AI Lab
@@ -47,7 +54,7 @@ def stage(dst: Path) -> None:
             continue
         target = dst / item
         if src.is_dir():
-            shutil.copytree(src, target, ignore=lambda d, names: [n for n in names if n in EXCLUDE_PARTS or n.endswith(".pyc")])
+            shutil.copytree(src, target, ignore=lambda d, names: [n for n in names if _skip(n)])
         else:
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, target)

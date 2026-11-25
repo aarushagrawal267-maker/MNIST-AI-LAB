@@ -12,3 +12,13 @@ docs
 notebooks
 tests
 outputs/reports/training_log*.txt
+# Secrets must never be baked into an image layer
+.env
+.env.*
+**/.env
+.streamlit/secrets.toml
+kaggle.json
+.kaggle
+*.pem
+*.key
+node_modules
