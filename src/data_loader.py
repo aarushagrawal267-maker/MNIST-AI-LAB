@@ -14,6 +14,7 @@ import gzip
 import os
 import shutil
 import struct
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -54,10 +55,14 @@ class DatasetUnavailableError(RuntimeError):
 def _atomic_savez(path: Path, compressed: bool = False, **arrays) -> None:
     """Write an .npz via a temp file + rename so readers never see a half-written cache
     (e.g. two Streamlit sessions downloading at once, or an interrupted first run)."""
-    tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+    # A unique name per writer: Streamlit sessions are threads of one process, so a pid-based
+    # name would be shared and one writer could rename or delete another's half-written file.
+    fd, tmp_name = tempfile.mkstemp(prefix=f"{path.name}.", suffix=".tmp", dir=path.parent)
+    tmp = Path(tmp_name)
     try:
-        with open(tmp, "wb") as fh:
+        with os.fdopen(fd, "wb") as fh:
             (np.savez_compressed if compressed else np.savez)(fh, **arrays)
+        os.chmod(tmp, 0o644)  # mkstemp creates 0600; keep the cache readable like a normal file
         os.replace(tmp, path)
     finally:
         tmp.unlink(missing_ok=True)

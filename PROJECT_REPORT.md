@@ -1,6 +1,6 @@
 # PURF — Project Report
 
-*Generated 2026-11-25 01:23 by `python -m src.report` from the saved experiment artefacts. All figures below are measured, not estimated.*
+*Generated 2026-11-25 04:11 by `python -m src.report` from the saved experiment artefacts. All figures below are measured, not estimated.*
 
 ## 1. Executive summary
 
@@ -194,7 +194,7 @@ Saliency, SmoothGrad, Integrated Gradients (64 steps, completeness error reporte
 
 Recorded 2026-11-13:
 
-* **Automated tests (pytest)** — 63 passed, 0 failed on 2026-11-25 (tests/: data, preprocessing, image processor, models, predictions, evaluation statistics, explainability)
+* **Automated tests (pytest)** — 64 passed, 0 failed on 2026-11-25 (tests/: data, preprocessing, image processor, models, predictions, evaluation statistics, explainability)
 * **Browser: all pages** — 13/13 pages rendered in headless Chromium with no Python exceptions and no JavaScript errors
 * **Browser: Draw Your Digit** — digits 0, 1, 2, 3, 4 and 7 drawn with real mouse strokes on the canvas; all 6 predicted correctly by TRAX (100.0% displayed confidence)
 * **Browser: Upload Your Digit** — an 800x600 JPEG 'photo' of a dark pen 7 on unevenly lit paper was predicted as 7; a corrupt PNG produced the message 'The file could not be decoded as an image...'

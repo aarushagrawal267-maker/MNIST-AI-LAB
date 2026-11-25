@@ -128,3 +128,30 @@ def test_corrupt_dataset_cache_falls_back(tmp_path, monkeypatch):
     with np.load(bad) as npz:  # cache rewritten atomically and readable
         assert npz["x_test"].shape == (10000, 28, 28)
     assert not list(tmp_path.glob("*.tmp"))
+
+
+def test_atomic_cache_write_is_thread_safe(tmp_path):
+    """Streamlit sessions are threads of one process: concurrent cache writes must not collide."""
+    import threading
+
+    from src.data_loader import _atomic_savez
+
+    path, errors = tmp_path / "cache.npz", []
+    x = np.arange(200_000, dtype=np.int64)
+
+    def write():
+        try:
+            for _ in range(10):
+                _atomic_savez(path, compressed=True, x=x)
+        except Exception as exc:  # noqa: BLE001 - surfaced through the assertion below
+            errors.append(exc)
+
+    threads = [threading.Thread(target=write) for _ in range(4)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert errors == []
+    with np.load(path) as npz:
+        np.testing.assert_array_equal(npz["x"], x)
+    assert not list(tmp_path.glob("*.tmp"))

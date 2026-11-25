@@ -344,7 +344,7 @@ Runs 20 independent checks against the model file on disk and the raw dataset an
 ```bat
 python -m pytest -q
 ```
-Current result: **63 passed** (Python 3.13, TensorFlow 2.21, CPU, ~35 s).
+Current result: **64 passed** (Python 3.13, TensorFlow 2.21, CPU, ~35 s).
 The suite covers dataset loading and dimensions, label validation, IDX parsing, stratified splitting,
 normalisation, resizing, centring, polarity, transparency, noise removal, model architectures, a short real training
 run, save/load round-trips for Keras and Joblib models, prediction validity (classes 0–9, probabilities in [0, 1]
