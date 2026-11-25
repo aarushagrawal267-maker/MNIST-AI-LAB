@@ -1,6 +1,6 @@
 # PURF — Project Report
 
-*Generated 2026-11-13 17:54 by `python -m src.report` from the saved experiment artefacts. All figures below are measured, not estimated.*
+*Generated 2026-11-25 01:23 by `python -m src.report` from the saved experiment artefacts. All figures below are measured, not estimated.*
 
 ## 1. Executive summary
 
@@ -81,13 +81,13 @@ Configurations that failed to learn within the short budget: EXP-025 (sgd, lr 0.
 | Tuned CNN | no | 19 | 15 | 1.3e-04 | 8.0 min | 99.17% | 0.0334 | 99.51% |
 | Tuned CNN + Augmentation | yes | 18 | 14 | 1.3e-04 | 7.2 min | 99.03% | 0.0274 | 99.39% |
 
-Augmentation (±10° rotation, ±10% shift, ±10% zoom) changed validation accuracy by **-0.13 percentage points** and validation log-loss from 0.0334 to 0.0274. It therefore **did not improve** validation performance in this experiment. Measured training cost: 25.2 s/epoch without vs 23.9 s/epoch with on-the-fly augmentation. Note the lower validation log-loss: augmentation produced better-calibrated probabilities even though accuracy did not improve; the augmented model remains selectable in the app.
+Augmentation (±10° rotation, ±10% shift, ±10% zoom) changed validation accuracy by **-0.13 percentage points** and validation log-loss from 0.0334 to 0.0274. It therefore **did not improve** validation accuracy in this experiment. Measured training cost: 25.2 s/epoch without vs 23.9 s/epoch with on-the-fly augmentation. The accuracy gap is small: on validation the two models disagree on 52 images (30 only the non-augmented model gets right, 22 only the augmented one), exact McNemar p = 0.33, so the selection between them is effectively a tie. The lower validation log-loss does not carry over to the test set (0.0193 without vs 0.0207 with augmentation), so it is not evidence of consistently better-calibrated probabilities. The augmented model is markedly more robust to un-centred input fed directly to the network (README, *Verifying TRAX*) and remains selectable in the app.
 
 ## 6. Model comparison
 
 ### 6.1 Validation split (used for model selection)
 
-| model | accuracy | precision | recall | F1 | log-loss | errors |
+| model | accuracy | macro precision | macro recall | macro F1 | log-loss | errors |
 |---|---|---|---|---|---|---|
 | Logistic Regression | 91.88% | 91.81% | 91.79% | 91.79% | 0.2986 | 487 / 6,000 |
 | K-Nearest Neighbors | 97.72% | 97.73% | 97.70% | 97.71% | 0.1839 | 137 / 6,000 |
@@ -99,7 +99,7 @@ Augmentation (±10° rotation, ±10% shift, ±10% zoom) changed validation accur
 
 ### 6.2 Test split (final, held-out — reported once, never used for selection)
 
-| model | accuracy | precision | recall | F1 | ROC AUC | errors | train time | ms / image (batch) | latency (1 image) | params |
+| model | accuracy | macro precision | macro recall | macro F1 | ROC AUC (macro OvR) | errors | train time | ms / image (batch) | latency (1 image) | params |
 |---|---|---|---|---|---|---|---|---|---|---|
 | Logistic Regression | 92.18% | 92.08% | 92.07% | 92.06% | 0.99369 | 782 / 10,000 | 5.7s | 0.0025 | 0.10 ms | n/a (sklearn) |
 | K-Nearest Neighbors | 97.64% | 97.64% | 97.62% | 97.62% | 0.99436 | 236 / 10,000 | 0.3s | 0.1507 | 2.44 ms | n/a (sklearn) |
@@ -115,6 +115,31 @@ Augmentation (±10° rotation, ±10% shift, ±10% zoom) changed validation accur
 * Moving from a fully-connected ANN (98.13%) to the brief's baseline CNN (99.15%) cuts test errors from 187 to 85 with a similar parameter budget — the benefit of local receptive fields, weight sharing and pooling.
 * TRAX reduces test errors further to 49. Its single-image latency (13.7 ms) is well within interactive limits on a CPU.
 * Batched inference is slowest for Support Vector Machine (0.3111 ms/image) and fastest for Logistic Regression (0.0025 ms/image); k-NN trains almost instantly (0.3s, just PCA + indexing) but must keep all training vectors in memory.
+
+### 6.3 Statistical uncertainty
+
+Validation was used for early stopping, checkpoint choice, learning-rate scheduling, the hyperparameter search and the final selection, so validation figures are optimistic by construction; the test figures are the unbiased estimate. All results come from a single seed and a single train/validation split, so run-to-run variance was not measured. 95% Wilson intervals for test accuracy (10,000 images):
+
+| model | test accuracy | 95% CI |
+|---|---|---|
+| Logistic Regression | 92.18% | 91.64% – 92.69% |
+| K-Nearest Neighbors | 97.64% | 97.32% – 97.92% |
+| Support Vector Machine | 97.82% | 97.51% – 98.09% |
+| Neural Network (ANN) | 98.13% | 97.85% – 98.38% |
+| CNN Baseline | 99.15% | 98.95% – 99.31% |
+| Tuned CNN **(TRAX)** | 99.51% | 99.35% – 99.63% |
+| Tuned CNN + Augmentation | 99.39% | 99.22% – 99.52% |
+
+Paired comparisons on the same images (exact McNemar test; p ≥ 0.05 means the difference is within chance disagreement):
+
+| comparison (A vs B) | split | only A right | only B right | exact McNemar p |
+|---|---|---|---|---|
+| Tuned CNN vs Tuned CNN + Augmentation | val | 30 | 22 | 0.33 |
+| Tuned CNN vs Tuned CNN + Augmentation | test | 35 | 23 | 0.15 |
+| Tuned CNN vs CNN Baseline | val | 32 | 17 | 0.044 |
+| Tuned CNN vs CNN Baseline | test | 54 | 18 | 2.6e-05 |
+| CNN Baseline vs Neural Network (ANN) | val | 63 | 20 | 2.4e-06 |
+| CNN Baseline vs Neural Network (ANN) | test | 127 | 25 | 1.2e-17 |
 
 ## 7. TRAX in detail (test split)
 
@@ -169,7 +194,7 @@ Saliency, SmoothGrad, Integrated Gradients (64 steps, completeness error reporte
 
 Recorded 2026-11-13:
 
-* **Automated tests (pytest)** — 61 passed, 0 failed (tests/: data, preprocessing, image processor, models, predictions, explainability)
+* **Automated tests (pytest)** — 63 passed, 0 failed on 2026-11-25 (tests/: data, preprocessing, image processor, models, predictions, evaluation statistics, explainability)
 * **Browser: all pages** — 13/13 pages rendered in headless Chromium with no Python exceptions and no JavaScript errors
 * **Browser: Draw Your Digit** — digits 0, 1, 2, 3, 4 and 7 drawn with real mouse strokes on the canvas; all 6 predicted correctly by TRAX (100.0% displayed confidence)
 * **Browser: Upload Your Digit** — an 800x600 JPEG 'photo' of a dark pen 7 on unevenly lit paper was predicted as 7; a corrupt PNG produced the message 'The file could not be decoded as an image...'

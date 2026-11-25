@@ -16,7 +16,7 @@ import pandas as pd
 
 from . import model_manager as mm
 from .config import EDA_STATS_PATH, MODEL_NAME, LAB_NAME, REPORTS_DIR, ROOT_DIR, SUMMARY_PATH, VALIDATION_REPORT_PATH
-from .evaluate import load_metrics, top_confusions
+from .evaluate import accuracy_ci, load_metrics, load_predictions, mcnemar_exact, top_confusions
 from .experiment_tracker import ExperimentTracker
 from .train import load_history
 
@@ -192,12 +192,22 @@ def build_report() -> str:
             d = (b["val_accuracy"] - a["val_accuracy"]) * 100
             A(f"Augmentation (±10° rotation, ±10% shift, ±10% zoom) changed validation accuracy by **{d:+.2f} percentage "
               f"points** and validation log-loss from {a['val_loss']:.4f} to {b['val_loss']:.4f}. "
-              + ("It therefore **improved** validation performance in this experiment." if d > 0 else
-                 "It therefore **did not improve** validation performance in this experiment.")
+              + ("It therefore **improved** validation accuracy in this experiment." if d > 0 else
+                 "It therefore **did not improve** validation accuracy in this experiment.")
               + f" Measured training cost: {a['train_time_s'] / a['epochs_trained']:.1f} s/epoch without vs "
-              f"{b['train_time_s'] / b['epochs_trained']:.1f} s/epoch with on-the-fly augmentation. Note the lower validation "
-              "log-loss: augmentation produced better-calibrated probabilities even though accuracy did not improve; the "
-              "augmented model remains selectable in the app.\n")
+              f"{b['train_time_s'] / b['epochs_trained']:.1f} s/epoch with on-the-fly augmentation.")
+            pa_v, pb_v = load_predictions("cnn_tuned", "val"), load_predictions("cnn_tuned_aug", "val")
+            ta, tb = load_metrics("cnn_tuned", "test"), load_metrics("cnn_tuned_aug", "test")
+            if pa_v and pb_v and ta and tb:
+                mc = mcnemar_exact(pa_v[1], pa_v[0].argmax(1), pb_v[0].argmax(1))
+                L[-1] += (f" The accuracy gap is small: on validation the two models disagree on {mc['only_a'] + mc['only_b']} "
+                          f"images ({mc['only_a']} only the non-augmented model gets right, {mc['only_b']} only the augmented one), "
+                          f"exact McNemar p = {mc['p_value']:.2f}, so the selection between them is effectively a tie. "
+                          f"The lower validation log-loss does not carry over to the test set ({ta['log_loss']:.4f} without vs "
+                          f"{tb['log_loss']:.4f} with augmentation), so it is not evidence of consistently better-calibrated "
+                          "probabilities. The augmented model is markedly more robust to un-centred input fed directly to the "
+                          "network (README, *Verifying TRAX*) and remains selectable in the app.")
+            L[-1] += "\n"
 
     A("## 6. Model comparison\n")
     A("### 6.1 Validation split (used for model selection)\n")
@@ -206,8 +216,8 @@ def build_report() -> str:
         mv = load_metrics(k, "val")
         if mv:
             rows.append({"model": models[k]["display_name"] + (f" **({MODEL_NAME})**" if k == prod else ""),
-                         "accuracy": _pct(mv["accuracy"]), "precision": _pct(mv["precision_macro"]), "recall": _pct(mv["recall_macro"]),
-                         "F1": _pct(mv["f1_macro"]), "log-loss": f"{mv['log_loss']:.4f}", "errors": f"{mv['n_errors']} / {mv['n_samples']:,}"})
+                         "accuracy": _pct(mv["accuracy"]), "macro precision": _pct(mv["precision_macro"]),
+                         "macro recall": _pct(mv["recall_macro"]), "macro F1": _pct(mv["f1_macro"]), "log-loss": f"{mv['log_loss']:.4f}", "errors": f"{mv['n_errors']} / {mv['n_samples']:,}"})
     A(_table(pd.DataFrame(rows)) + "\n")
     A("### 6.2 Test split (final, held-out — reported once, never used for selection)\n")
     rows = []
@@ -215,8 +225,8 @@ def build_report() -> str:
         mt = load_metrics(k, "test")
         if mt:
             rows.append({"model": models[k]["display_name"] + (f" **({MODEL_NAME})**" if k == prod else ""),
-                         "accuracy": _pct(mt["accuracy"]), "precision": _pct(mt["precision_macro"]), "recall": _pct(mt["recall_macro"]),
-                         "F1": _pct(mt["f1_macro"]), "ROC AUC": f"{mt['roc_auc_ovr_macro']:.5f}", "errors": f"{mt['n_errors']} / {mt['n_samples']:,}",
+                         "accuracy": _pct(mt["accuracy"]), "macro precision": _pct(mt["precision_macro"]),
+                         "macro recall": _pct(mt["recall_macro"]), "macro F1": _pct(mt["f1_macro"]), "ROC AUC (macro OvR)": f"{mt['roc_auc_ovr_macro']:.5f}", "errors": f"{mt['n_errors']} / {mt['n_samples']:,}",
                          "train time": f"{models[k]['train_time_s']:.1f}s", "ms / image (batch)": f"{mt['inference_ms_per_image']:.4f}",
                          "latency (1 image)": f"{mt['latency_ms_single']:.2f} ms",
                          "params": f"{models[k]['params']:,}" if models[k].get("params") else "n/a (sklearn)"})
@@ -239,6 +249,37 @@ def build_report() -> str:
           f"({models['knn']['train_time_s']:.1f}s, just PCA + indexing) but must keep all training vectors in memory.")
         A("")
 
+    A("### 6.3 Statistical uncertainty\n")
+    A("Validation was used for early stopping, checkpoint choice, learning-rate scheduling, the hyperparameter search and "
+      "the final selection, so validation figures are optimistic by construction; the test figures are the unbiased "
+      "estimate. All results come from a single seed and a single train/validation split, so run-to-run variance was not "
+      "measured. 95% Wilson intervals for test accuracy (10,000 images):\n")
+    rows = []
+    for k in keys:
+        mt = load_metrics(k, "test")
+        if mt:
+            lo, hi = accuracy_ci(mt["n_samples"] - mt["n_errors"], mt["n_samples"])
+            rows.append({"model": models[k]["display_name"] + (f" **({MODEL_NAME})**" if k == prod else ""),
+                         "test accuracy": _pct(mt["accuracy"]),
+                         "95% CI": f"{lo * 100:.2f}% – {hi * 100:.2f}%"})
+    A(_table(pd.DataFrame(rows)) + "\n")
+    pairs = [(prod, "cnn_tuned_aug"), (prod, "cnn_baseline"), ("cnn_baseline", "ann")]
+    rows = []
+    for a, b in pairs:
+        if a == b or a not in models or b not in models:
+            continue
+        for split in ("val", "test"):
+            pa, pb = load_predictions(a, split), load_predictions(b, split)
+            if pa and pb:
+                mc = mcnemar_exact(pa[1], pa[0].argmax(1), pb[0].argmax(1))
+                rows.append({"comparison (A vs B)": f"{models[a]['display_name']} vs {models[b]['display_name']}",
+                             "split": split, "only A right": mc["only_a"], "only B right": mc["only_b"],
+                             "exact McNemar p": f"{mc['p_value']:.2g}"})
+    if rows:
+        A("Paired comparisons on the same images (exact McNemar test; p ≥ 0.05 means the difference is within chance "
+          "disagreement):\n")
+        A(_table(pd.DataFrame(rows)) + "\n")
+
     A(f"## 7. {MODEL_NAME} in detail (test split)\n")
     rep = pt["classification_report"]
     t = pd.DataFrame([{"digit": i, "precision": f"{rep[str(i)]['precision']:.4f}", "recall": f"{rep[str(i)]['recall']:.4f}",
@@ -256,8 +297,6 @@ def build_report() -> str:
     A("```\n     " + " ".join(f"{j:>5}" for j in range(10)) + "\n" +
       "\n".join(f"{i:>3}  " + " ".join(f"{v:>5}" for v in row) for i, row in enumerate(cm)) + "\n```\n")
     # Calibration from saved predictions
-    from .evaluate import load_predictions
-
     pr = load_predictions(prod, "test")
     if pr:
         proba, y = pr

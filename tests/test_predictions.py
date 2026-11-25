@@ -7,7 +7,7 @@ import pytest
 from PIL import Image
 
 from src import model_manager as mm
-from src.evaluate import compute_metrics, predict_proba
+from src.evaluate import accuracy_ci, compute_metrics, mcnemar_exact, predict_proba
 from src.prediction import Predictor, expand_uploads
 from tests.conftest import draw_digit
 
@@ -95,6 +95,31 @@ def test_compute_metrics_perfect_and_shapes():
     assert m["accuracy"] == 1.0 and m["f1_macro"] == 1.0
     assert np.array(m["confusion_matrix"]).shape == (10, 10)
     assert len(m["per_class_accuracy"]) == 10
+
+
+def test_accuracy_ci_wilson_known_values():
+    # 49 errors on 10,000 (TRAX test result): Wilson 95% interval, checked by hand against the closed form.
+    lo, hi = accuracy_ci(9951, 10000)
+    assert lo < 0.9951 < hi
+    assert lo == pytest.approx(0.99352, abs=5e-5) and hi == pytest.approx(0.99629, abs=5e-5)
+    lo, hi = accuracy_ci(10, 10)  # perfect score still gets a non-degenerate lower bound
+    assert hi == pytest.approx(1.0) and 0.6 < lo < 0.75
+    with pytest.raises(ValueError):
+        accuracy_ci(0, 0)
+
+
+def test_mcnemar_exact_counts_and_pvalue():
+    y = np.zeros(100, dtype=int)
+    a = np.zeros(100, dtype=int)
+    b = np.zeros(100, dtype=int)
+    b[:10] = 1          # B wrong on 10 images that A gets right
+    a[10:12] = 1        # A wrong on 2 images that B gets right
+    r = mcnemar_exact(y, a, b)
+    assert (r["only_a"], r["only_b"]) == (10, 2)
+    assert r["p_value"] == pytest.approx(0.03857, abs=1e-4)  # 2 * P(X <= 2), X ~ Bin(12, 0.5)
+    assert mcnemar_exact(y, a, a)["p_value"] == 1.0
+    with pytest.raises(ValueError):
+        mcnemar_exact(y, a[:5], b)
 
 
 def test_predictor_rejects_unknown_model():

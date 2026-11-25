@@ -95,6 +95,33 @@ def compute_metrics(y_true: np.ndarray, proba: np.ndarray) -> dict[str, Any]:
     }
 
 
+def accuracy_ci(n_correct: int, n: int, confidence: float = 0.95) -> tuple[float, float]:
+    """Wilson score interval for an accuracy of ``n_correct`` out of ``n``."""
+    from scipy.stats import binomtest
+
+    if n <= 0:
+        raise ValueError("accuracy_ci needs at least one sample")
+    ci = binomtest(int(n_correct), int(n)).proportion_ci(confidence_level=confidence, method="wilson")
+    return float(ci.low), float(ci.high)
+
+
+def mcnemar_exact(y_true: np.ndarray, pred_a: np.ndarray, pred_b: np.ndarray) -> dict[str, Any]:
+    """Exact (binomial) McNemar test for two classifiers scored on the same images.
+
+    ``only_a`` counts images model A gets right and model B gets wrong, ``only_b`` the reverse.
+    A large p-value means the accuracy difference is within what chance disagreement would produce.
+    """
+    from scipy.stats import binomtest
+
+    y_true, pred_a, pred_b = (np.asarray(v).astype(int) for v in (y_true, pred_a, pred_b))
+    if not (len(y_true) == len(pred_a) == len(pred_b)):
+        raise ValueError("mcnemar_exact needs aligned predictions")
+    ok_a, ok_b = pred_a == y_true, pred_b == y_true
+    only_a, only_b = int((ok_a & ~ok_b).sum()), int((~ok_a & ok_b).sum())
+    p = float(binomtest(only_a, only_a + only_b, 0.5).pvalue) if only_a + only_b else 1.0
+    return {"only_a": only_a, "only_b": only_b, "p_value": p}
+
+
 def roc_curves(y_true: np.ndarray, proba: np.ndarray) -> dict[int, dict[str, Any]]:
     from sklearn.metrics import auc, roc_curve
 

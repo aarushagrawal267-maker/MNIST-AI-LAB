@@ -57,6 +57,15 @@ TRAX was selected on validation accuracy only; the test set was scored afterward
 validation log-loss (0.0334 → 0.0274) but did not raise validation accuracy in this run, so the non-augmented model
 was promoted. TRAX also recognised all 120 synthetic canvas drawings (10 digits × 12 position/size/brush variants).
 
+**How precise are these numbers?** TRAX's 99.51% test accuracy has a 95% confidence interval of 99.35–99.63%
+(Wilson, 49 errors on 10,000). The gap between TRAX and the augmented model is *not* statistically significant
+(exact McNemar test on the same images: p = 0.33 on validation, p = 0.15 on test), so choosing between them was
+effectively a tie; the augmented model's lower validation log-loss also did not hold on test (0.0193 vs 0.0207).
+The improvements from ANN → baseline CNN → TRAX are significant on test (p < 0.001). Validation was also used for
+early stopping, learning-rate scheduling and the hyperparameter search, so validation figures are slightly optimistic
+by design — the test column is the unbiased one. Every number comes from a single seed and split. Precision, recall and
+F1 in the report are macro averages. Details: [PROJECT_REPORT.md §6.3](PROJECT_REPORT.md#63-statistical-uncertainty).
+
 ---
 
 ## 1. Introduction
@@ -295,7 +304,11 @@ ZIP of real MNIST digits is downloadable from the page.
 ## 18. Limitations
 * Trained only on MNIST: unusual handwriting styles (e.g. crossed 7s, open 4s), stylised fonts, or very thick
   strokes relative to digit size can be misread. Accuracy on your own handwriting can differ from test accuracy.
-* One digit per image; there is no "not a digit" class — the model always answers 0–9.
+* One digit per image; there is no "not a digit" class — the model always answers 0–9. On 200 pure random-noise
+  images TRAX still answers with a mean confidence of 100.0% (`python -m src.verify`), so high confidence does not
+  mean the input was a digit.
+* All metrics come from one training run (seed 42) on one train/validation split; run-to-run variance was not
+  measured. Differences of a few tenths of a percent between the top models are within noise (see *Results at a glance*).
 * Photos need a reasonably uniform background; lined/grid paper and strong shadows hurt digit detection.
 * Softmax confidence is not a guarantee of correctness; explainability maps show sensitivity, not causality.
 * The SVM is trained on a 20k subset to keep training time laptop-friendly.
@@ -314,12 +327,15 @@ Runs 20 independent checks against the model file on disk and the raw dataset an
 `outputs/reports/trax_verification.json`. Latest run: **20/20 passed**. The run confirms:
 * **Our own model:** epoch-by-epoch training history exists, and the same architecture untrained scores
   **10.96%** (chance) vs **99.51%** trained. Retraining from scratch with seed 42 reproduced TRAX exactly
-  (19 epochs, 99.17% validation, 99.51% test — `outputs/reports/retrain_from_scratch.json`).
+  (19 epochs, 99.17% validation, 99.51% test — `outputs/reports/retrain_from_scratch.json`). An independent re-run on
+  2026-11-25 (TensorFlow 2.21 / Keras 3.15, 4-core x86_64 CPU) gave the same 19 epochs and test probabilities identical
+  to the shipped model's; on other CPUs or TensorFlow builds, expect small numeric differences.
 * **No leakage:** 0 of the 10,000 test images occur in the training data; train/validation splits are disjoint.
 * **Correct outputs:** recomputed test accuracy matches the report, every digit > 98% recall, valid probabilities,
   deterministic predictions, identical after save/reload.
-* **Robustness:** ±12° rotation 98.0–98.6%, noise 97.7%, thicker strokes 98.6%, off-centre digits through the app
-  pipeline 98.9%, synthetic canvas drawings 120/120.
+* **Robustness:** ±12° rotation 98.0–98.6%, noise 97.7%, thicker strokes 98.6% (each on the first 2,000 test images,
+  where TRAX scores 99.20% unperturbed), off-centre digits through the app pipeline 98.9% (first 1,000 test images,
+  99.40% unperturbed), synthetic canvas drawings 120/120. These are synthetic perturbations, not real-world handwriting.
 * **Known sensitivity:** off-centre 28×28 tensors fed *directly* (bypassing preprocessing) drop to 90.7% at a 2 px
   shift — TRAX relies on MNIST-style centring, which the app always applies. `cnn_tuned_aug` is the shift-robust
   alternative (98.9%) and can be selected on every page.
@@ -328,7 +344,7 @@ Runs 20 independent checks against the model file on disk and the raw dataset an
 ```bat
 python -m pytest -q
 ```
-Current result: **61 passed** (Python 3.13, TensorFlow 2.21, CPU, ~35 s).
+Current result: **63 passed** (Python 3.13, TensorFlow 2.21, CPU, ~35 s).
 The suite covers dataset loading and dimensions, label validation, IDX parsing, stratified splitting,
 normalisation, resizing, centring, polarity, transparency, noise removal, model architectures, a short real training
 run, save/load round-trips for Keras and Joblib models, prediction validity (classes 0–9, probabilities in [0, 1]
