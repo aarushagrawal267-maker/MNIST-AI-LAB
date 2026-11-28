@@ -24,7 +24,7 @@ if prod:
     a, b = st.columns([1, 1.4])
     with a:
         st.markdown(
-            f"<div class='purf-card'><span class='badge trax'>⚡ {MODEL_NAME}</span>"
+            f"<div class='purf-card'><span class='badge trax'>{MODEL_NAME}</span>"
             f"<h4 style='margin-top:14px'>{T.esc(e['display_name'])}</h4>"
             f"<p><b>Architecture</b><br>{T.esc(e['architecture'])}</p><br>"
             f"<p><b>Parameters</b> {e.get('params', 0):,} · <b>Augmentation</b> {'yes' if e.get('augmentation') else 'no'}<br>"
@@ -38,21 +38,21 @@ if prod:
             f"The pipeline trains five model families, runs a controlled random search over CNN hyperparameters "
             f"(filters, depth, batch-norm, dense size, dropout, optimizer, learning rate, batch size, epochs), retrains the "
             f"best configuration on the full training split with and without augmentation, and promotes the CNN with the "
-            f"highest <b>validation</b> accuracy to {MODEL_NAME}. The 10,000-image test set is scored only afterwards.", "🧭"),
+            f"highest <b>validation</b> accuracy to {MODEL_NAME}. The 10,000-image test set is scored only afterwards."),
             unsafe_allow_html=True)
 
 T.section("System architecture")
 st.graphviz_chart("""
 digraph G {
   rankdir=LR; bgcolor="transparent"; nodesep=0.35; ranksep=0.45;
-  node [shape=box, style="rounded,filled", fillcolor="#141c3d", color="#3b4680", fontcolor="#e8ecff", fontname="Helvetica", fontsize=11];
-  edge [color="#7f89b8", arrowsize=0.7];
-  kaggle [label="Kaggle\\nhojjatk/mnist-dataset", fillcolor="#1d2a5c"];
+  node [shape=box, style="rounded,filled", fillcolor="#19191b", color="#3a3a3e", fontcolor="#ededed", fontname="Helvetica", fontsize=11];
+  edge [color="#85858b", arrowsize=0.7];
+  kaggle [label="Kaggle\\nhojjatk/mnist-dataset", fillcolor="#232325"];
   loader [label="data_loader\\nIDX parser + cache"]; val [label="data_validation"]; eda [label="eda"];
   prep [label="preprocessing\\naugmentation"]; models [label="models\\nsklearn + Keras"]; train [label="train\\ncallbacks + tuning"];
   tracker [label="experiment_tracker"]; reg [label="model_manager\\nregistry.json"]; evaluate [label="evaluate\\nmetrics, ROC, PR"];
   xai [label="explainability"]; ip [label="image_processor\\nMNIST-style centring"]; pred [label="prediction"];
-  ui [label="Streamlit UI\\n13 pages", fillcolor="#2a1f66"]; canvas [label="drawing_canvas\\ncustom HTML component", fillcolor="#2a1f66"];
+  ui [label="Streamlit UI\\n13 pages", fillcolor="#232325", color="#7fa7ee"]; canvas [label="drawing_canvas\\ncustom HTML component", fillcolor="#232325", color="#7fa7ee"];
   kaggle -> loader -> val; loader -> eda; loader -> prep -> train; models -> train -> reg; train -> tracker;
   reg -> evaluate; reg -> pred; ip -> pred; canvas -> ip; pred -> ui; evaluate -> ui; xai -> ui; eda -> ui; tracker -> ui;
 }

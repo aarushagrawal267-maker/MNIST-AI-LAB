@@ -1,4 +1,4 @@
-"""PURF — handwritten digit intelligence lab.
+"""PURF — handwritten digit lab.
 
 Launch with:  streamlit run app.py
 """
@@ -10,7 +10,7 @@ from src.config import LAB_NAME
 from src.ui import common, theme
 
 st.set_page_config(
-    page_title=f"{LAB_NAME} · Digit Intelligence Lab",
+    page_title=f"{LAB_NAME} · Handwritten Digit Lab",
     page_icon="assets/icon.svg",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -31,7 +31,7 @@ pages = {
     "Data": [
         st.Page(P + "1_Dataset_Explorer.py", title="Dataset Explorer", icon=":material/dataset:"),
         st.Page(P + "2_Image_Preprocessing.py", title="Image Preprocessing", icon=":material/tune:"),
-        st.Page(P + "3_Image_Augmentation.py", title="Image Augmentation", icon=":material/auto_awesome:"),
+        st.Page(P + "3_Image_Augmentation.py", title="Image Augmentation", icon=":material/rotate_right:"),
     ],
     "Modeling": [
         st.Page(P + "4_Model_Training.py", title="Model Training", icon=":material/model_training:"),

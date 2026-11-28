@@ -1,8 +1,8 @@
 """PURF visual design system: CSS, Plotly template and HTML building blocks.
 
-Chrome (gradients, glows) uses the brand violet/cyan. Data marks use a
+Chrome is a quiet graphite ramp with one pencil-blue accent. Data marks use a
 validated categorical palette (checked for colour-vision-deficiency
-separation and >=3:1 contrast against the navy surface) so charts stay legible.
+separation and >=3:1 contrast against a dark surface) so charts stay legible.
 """
 from __future__ import annotations
 
@@ -15,25 +15,30 @@ import numpy as np
 # --------------------------------------------------------------------------- #
 # Tokens
 # --------------------------------------------------------------------------- #
-BG = "#060913"
-SURFACE = "#0f1631"
-SURFACE_2 = "#141c3d"
-BORDER = "rgba(148,163,255,0.14)"
-TEXT = "#e8ecff"
-TEXT_2 = "#b4bce3"
-MUTED = "#7f89b8"
-GRID = "rgba(148,163,255,0.08)"
-AXIS = "rgba(148,163,255,0.22)"
-BRAND = "#7c5cff"
-BRAND_2 = "#22d3ee"
-BRAND_3 = "#f472b6"
+# Graphite ramp (a pencil on paper, dark) plus one pencil-blue accent.
+BG = "#141415"
+SIDEBAR = "#0f0f10"
+SURFACE = "#19191b"
+SURFACE_2 = "#232325"
+BORDER = "rgba(237,237,237,0.08)"
+BORDER_STRONG = "rgba(237,237,237,0.14)"
+TEXT = "#ededed"
+TEXT_2 = "#a1a1a6"
+MUTED = "#85858b"
+GRID = "rgba(237,237,237,0.06)"
+AXIS = "rgba(237,237,237,0.16)"
+ACCENT = "#7fa7ee"
+# Legacy names kept so page code keeps working; all point at the one accent.
+BRAND = ACCENT
+BRAND_2 = ACCENT
+BRAND_3 = ACCENT
 
 # Validated categorical order (dark steps) — assign in this order, never cycle.
 SERIES = ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#008300", "#9085e9", "#e66767"]
-# Sequential single-hue blue ramp (dark surface -> bright = more)
-SEQ_BLUE = ["#0f1631", "#104281", "#1c5cab", "#2a78d6", "#5598e7", "#86b6ef", "#cde2fb"]
+# Sequential single-hue blue ramp (card surface -> bright = more)
+SEQ_BLUE = ["#19191b", "#104281", "#1c5cab", "#2a78d6", "#5598e7", "#86b6ef", "#cde2fb"]
 GOOD, WARNING, SERIOUS, CRITICAL = "#0ca30c", "#fab219", "#ec835a", "#d03b3b"
-NEUTRAL = "#4b5583"
+NEUTRAL = "#4a4a50"
 
 # Fixed colour per model (identity follows the entity, not its rank)
 MODEL_COLORS = {
@@ -63,21 +68,21 @@ def register_plotly_template() -> None:
         return
     axis = dict(
         gridcolor=GRID, linecolor=AXIS, zerolinecolor=AXIS, tickcolor=AXIS,
-        tickfont=dict(color=MUTED, size=12), title=dict(font=dict(color=TEXT_2, size=13)),
+        tickfont=dict(color=MUTED, size=12, family="'IBM Plex Mono', monospace"), title=dict(font=dict(color=TEXT_2, size=13)),
         showline=True, ticks="",
     )
     pio.templates["purf"] = go.layout.Template(
         layout=dict(
-            font=dict(family="Inter, 'Segoe UI', system-ui, sans-serif", color=TEXT, size=13),
+            font=dict(family="'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif", color=TEXT, size=13),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             colorway=SERIES,
             xaxis=axis,
             yaxis=axis,
-            margin=dict(l=48, r=18, t=48, b=44),
-            title=dict(font=dict(family="'Space Grotesk', Inter, sans-serif", size=16, color=TEXT), x=0, xanchor="left"),
+            margin=dict(l=48, r=20, t=48, b=44),
+            title=dict(font=dict(family="'IBM Plex Sans', sans-serif", size=15, color=TEXT), x=0, xanchor="left"),
             legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=TEXT_2), orientation="h", y=1.02, yanchor="bottom", x=1, xanchor="right"),
-            hoverlabel=dict(bgcolor=SURFACE_2, bordercolor=BRAND, font=dict(color=TEXT, family="Inter, sans-serif")),
+            hoverlabel=dict(bgcolor=SURFACE_2, bordercolor=AXIS, font=dict(color=TEXT, family="'IBM Plex Mono', monospace")),
             hovermode="closest",
             coloraxis=dict(colorbar=dict(outlinewidth=0, tickfont=dict(color=MUTED))),
             bargap=0.28,
@@ -105,206 +110,182 @@ PLOTLY_CONFIG = {"displaylogo": False, "modeBarButtonsToRemove": ["lasso2d", "se
 # --------------------------------------------------------------------------- #
 CSS = f"""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 :root {{
-  --bg: {BG}; --surface: {SURFACE}; --surface2: {SURFACE_2}; --border: {BORDER};
-  --text: {TEXT}; --text2: {TEXT_2}; --muted: {MUTED};
-  --brand: {BRAND}; --brand2: {BRAND_2}; --brand3: {BRAND_3};
-  --radius: 18px;
+  --bg: {BG}; --sidebar: {SIDEBAR}; --surface: {SURFACE}; --surface2: {SURFACE_2};
+  --border: {BORDER}; --border-strong: {BORDER_STRONG};
+  --text: {TEXT}; --text2: {TEXT_2}; --muted: {MUTED}; --accent: {ACCENT};
+  --brand: {ACCENT}; --brand2: {ACCENT};
+  --radius: 14px; --radius-sm: 8px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
 }}
 
 html, body, [class*="css"], .stApp, .stMarkdown, button, input, textarea, select {{
-  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-family: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
 }}
-h1, h2, h3, h4, .purf-display {{ font-family: 'Space Grotesk', 'Inter', sans-serif !important; letter-spacing: -0.02em; }}
+h1, h2, h3, h4, .purf-display {{ font-family: 'IBM Plex Sans', sans-serif !important; font-weight: 500 !important; letter-spacing: 0; }}
 
-/* ---------- App background: deep space + aurora + grid ---------- */
-.stApp {{
-  background:
-    radial-gradient(1200px 600px at 8% -10%, rgba(124,92,255,0.22), transparent 60%),
-    radial-gradient(900px 500px at 100% 0%, rgba(34,211,238,0.14), transparent 60%),
-    radial-gradient(800px 600px at 50% 120%, rgba(244,114,182,0.10), transparent 60%),
-    {BG};
-  background-attachment: fixed;
-}}
-.stApp::before {{
-  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  background-image: linear-gradient(rgba(148,163,255,0.045) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(148,163,255,0.045) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: radial-gradient(ellipse at 50% 0%, black 0%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 0%, transparent 75%);
-}}
+/* ---------- App background: plain graphite ---------- */
+.stApp {{ background: {BG}; }}
 [data-testid="stHeader"] {{ background: transparent; }}
-[data-testid="stMainBlockContainer"], .block-container {{ padding-top: 2.2rem; max-width: 1320px; }}
+[data-testid="stMainBlockContainer"], .block-container {{ padding-top: 40px; max-width: 1440px; }}
 
 /* ---------- Sidebar ---------- */
-[data-testid="stSidebar"] {{
-  background: linear-gradient(180deg, rgba(15,22,49,0.96), rgba(6,9,19,0.98));
-  border-right: 1px solid var(--border);
+[data-testid="stSidebar"] {{ background: var(--sidebar); border-right: 1px solid var(--border); }}
+[data-testid="stSidebarNav"] a, [data-testid="stSidebarNavLink"] {{
+  border-radius: var(--radius-sm); transition: background-color .15s var(--ease), color .15s var(--ease);
 }}
-[data-testid="stSidebarNav"] a, [data-testid="stSidebarNavLink"] {{ border-radius: 10px; transition: all .15s ease; }}
-[data-testid="stSidebarNavLink"]:hover {{ background: rgba(124,92,255,0.12); }}
+[data-testid="stSidebarNavLink"]:hover {{ background: var(--surface); }}
 [data-testid="stSidebarNavLink"][aria-current="page"] {{
-  background: linear-gradient(90deg, rgba(124,92,255,0.28), rgba(34,211,238,0.08));
-  box-shadow: inset 2px 0 0 var(--brand2);
+  background: var(--surface2); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
 }}
 [data-testid="stSidebarNavSeparator"] {{ border-color: var(--border); }}
-[data-testid="stNavSectionHeader"] {{ color: var(--muted) !important; letter-spacing: .14em; font-size: .68rem !important; text-transform: uppercase; }}
+[data-testid="stNavSectionHeader"] {{ color: var(--muted) !important; letter-spacing: 0; font-size: 12px !important; text-transform: none; font-weight: 500; }}
 
 /* ---------- Widgets ---------- */
 .stButton > button, .stDownloadButton > button, [data-testid="stFormSubmitButton"] > button {{
-  border-radius: 12px; border: 1px solid var(--border); background: rgba(20,28,61,0.8);
-  color: var(--text); font-weight: 600; transition: all .18s ease;
+  border-radius: var(--radius-sm); border: 1px solid var(--border-strong); background: var(--surface2);
+  color: var(--text); font-weight: 500;
+  transition: background-color .15s var(--ease), border-color .15s var(--ease), color .15s var(--ease), transform .12s var(--ease);
 }}
-.stButton > button:hover, .stDownloadButton > button:hover {{
-  border-color: rgba(34,211,238,0.6); color: white; transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(34,211,238,0.14);
+.stButton > button:hover, .stDownloadButton > button:hover {{ border-color: rgba(237,237,237,0.28); color: var(--text); background: #2a2a2d; }}
+.stButton > button:active, .stDownloadButton > button:active {{ transform: scale(0.98); }}
+.stButton > button:focus-visible, .stDownloadButton > button:focus-visible, [data-testid="stPageLink"] a:focus-visible {{
+  outline: 2px solid var(--accent); outline-offset: 2px;
 }}
 .stButton > button[kind="primary"], [data-testid="stFormSubmitButton"] > button[kind="primary"],
 .stButton > button[data-testid="stBaseButton-primary"], button[data-testid="stBaseButton-primaryFormSubmit"],
 button[data-testid^="stBaseButton-primary"] {{
-  background: linear-gradient(135deg, var(--brand), #4f46e5 50%, var(--brand2)); border: none; color: white;
-  box-shadow: 0 8px 26px rgba(124,92,255,0.35);
+  background: var(--text); border: 1px solid var(--text); color: #141415;
 }}
+button[data-testid^="stBaseButton-primary"]:hover {{ background: #ffffff; color: #141415; }}
 [data-testid="stPageLink"] a {{
-  border: 1px solid var(--border); border-radius: 12px; background: rgba(20,28,61,0.6); padding: .45rem .8rem;
+  border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface); padding: 8px 12px;
+  transition: background-color .15s var(--ease), border-color .15s var(--ease);
 }}
-[data-testid="stPageLink"] a:hover {{ border-color: var(--brand2); }}
-.stTabs [data-baseweb="tab-list"] {{ gap: 6px; border-bottom: 1px solid var(--border); }}
-.stTabs [data-baseweb="tab"] {{ border-radius: 10px 10px 0 0; padding: 8px 16px; color: var(--text2); }}
-.stTabs [aria-selected="true"] {{ color: white !important; background: rgba(124,92,255,0.14); }}
-.stTabs [data-baseweb="tab-highlight"] {{ background: linear-gradient(90deg, var(--brand), var(--brand2)); height: 2px; }}
-[data-testid="stExpander"] {{ border: 1px solid var(--border); border-radius: 14px; background: rgba(15,22,49,0.55); }}
-[data-testid="stDataFrame"], [data-testid="stTable"] {{ border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }}
-[data-testid="stMetric"] {{
-  background: rgba(15,22,49,0.6); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px;
-}}
-[data-testid="stMetricValue"] {{ font-family: 'Space Grotesk', sans-serif; }}
-[data-testid="stFileUploaderDropzone"] {{
-  border: 1.5px dashed rgba(124,92,255,0.45); background: rgba(15,22,49,0.55); border-radius: 16px;
-}}
-.stProgress > div > div > div > div {{ background: linear-gradient(90deg, var(--brand), var(--brand2)); }}
-div[data-testid="stAlert"] {{ border-radius: 14px; }}
-code {{ font-family: 'JetBrains Mono', monospace; }}
+[data-testid="stPageLink"] a:hover {{ border-color: rgba(237,237,237,0.28); background: var(--surface2); }}
+.stTabs [data-baseweb="tab-list"] {{ gap: 4px; border-bottom: 1px solid var(--border); }}
+.stTabs [data-baseweb="tab"] {{ border-radius: var(--radius-sm) var(--radius-sm) 0 0; padding: 8px 16px; color: var(--text2); }}
+.stTabs [aria-selected="true"] {{ color: var(--text) !important; background: transparent; }}
+.stTabs [data-baseweb="tab-highlight"] {{ background: var(--accent); height: 2px; }}
+[data-testid="stExpander"] {{ border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }}
+[data-testid="stDataFrame"], [data-testid="stTable"] {{ border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }}
+[data-testid="stMetric"] {{ background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; }}
+[data-testid="stMetricValue"] {{ font-family: var(--mono); font-variant-numeric: tabular-nums; }}
+[data-testid="stFileUploaderDropzone"] {{ border: 1px dashed var(--border-strong); background: var(--surface); border-radius: var(--radius); }}
+.stProgress > div > div > div > div {{ background: var(--accent); }}
+div[data-testid="stAlert"] {{ border-radius: var(--radius); }}
+code {{ font-family: var(--mono); color: var(--text2) !important; background: var(--surface2) !important; }}
 hr {{ border-color: var(--border); }}
 
-/* ---------- Custom components ---------- */
+/* ---------- Hero ---------- */
 .purf-hero {{
-  position: relative; overflow: hidden; border-radius: 28px; padding: 46px 44px 40px;
-  background: linear-gradient(140deg, rgba(124,92,255,0.20), rgba(15,22,49,0.75) 40%, rgba(34,211,238,0.10));
-  border: 1px solid rgba(148,163,255,0.20);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 48px; align-items: center;
+  padding: 24px 0 32px; border-bottom: 1px solid var(--border);
 }}
-.purf-hero::after {{
-  content: ""; position: absolute; width: 520px; height: 520px; right: -140px; top: -220px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(34,211,238,0.30), transparent 65%); filter: blur(10px);
-  animation: float 9s ease-in-out infinite;
-}}
-@keyframes float {{ 0%,100% {{ transform: translateY(0) }} 50% {{ transform: translateY(26px) }} }}
-.purf-kicker {{
-  display: inline-flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: .22em; text-transform: uppercase;
-  color: var(--brand2); font-weight: 600; padding: 6px 12px; border: 1px solid rgba(34,211,238,0.35); border-radius: 999px;
-  background: rgba(34,211,238,0.06);
-}}
-.purf-kicker .dot {{ width: 7px; height: 7px; border-radius: 50%; background: var(--brand2); box-shadow: 0 0 10px var(--brand2); animation: pulse 2s infinite; }}
-@keyframes pulse {{ 0%,100% {{ opacity: 1 }} 50% {{ opacity: .35 }} }}
+.purf-kicker {{ display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); font-family: var(--mono); }}
+.purf-kicker .dot {{ width: 8px; height: 8px; background: var(--accent); }}
+.purf-kicker .dot.off {{ background: var(--muted); }}
 .purf-title {{
-  font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(2.6rem, 6vw, 4.6rem); line-height: 1.02;
-  margin: 18px 0 10px; letter-spacing: -0.04em;
-  background: linear-gradient(92deg, #ffffff 10%, #c4b5fd 45%, var(--brand2) 85%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-family: 'IBM Plex Sans', sans-serif; font-weight: 500; font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.06;
+  margin: 16px 0 16px; letter-spacing: -0.03em; color: var(--text);
 }}
-.purf-sub {{ color: var(--text2); font-size: 1.08rem; max-width: 760px; line-height: 1.6; }}
-.grad-text {{
-  background: linear-gradient(92deg, #c4b5fd, var(--brand2)); -webkit-background-clip: text; background-clip: text; color: transparent;
-}}
-.purf-page-head {{ margin: 0 0 22px; }}
-.purf-page-head .eyebrow {{ color: var(--brand2); font-size: 12px; letter-spacing: .22em; text-transform: uppercase; font-weight: 600; }}
-.purf-page-head h1 {{ font-size: 2.35rem; margin: 6px 0 6px; padding: 0; font-weight: 700;
-  background: linear-gradient(92deg, #fff, #c4b5fd 60%, var(--brand2)); -webkit-background-clip: text; background-clip: text; color: transparent; }}
-.purf-page-head p {{ color: var(--text2); margin: 0; max-width: 860px; line-height: 1.55; }}
+.purf-sub {{ color: var(--text2); font-size: 18px; max-width: 40rem; line-height: 1.6; }}
+.purf-sub b {{ color: var(--text); font-weight: 500; }}
+.purf-specimen {{ display: flex; align-items: center; gap: 24px; padding: 24px; border: 1px solid var(--border);
+  border-radius: 20px; background: var(--surface); }}
+.purf-specimen .px {{ width: 168px; height: 168px; image-rendering: pixelated; display: block; border-radius: 4px;
+  background: #000; box-shadow: 0 0 0 1px var(--border); }}
+.purf-specimen .read {{ display: flex; flex-direction: column; gap: 4px; min-width: 112px; }}
+.purf-specimen .d {{ font-family: var(--mono); font-size: 96px; line-height: 1; font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }}
+.purf-specimen .c {{ font-family: var(--mono); font-size: 15px; color: var(--accent); font-variant-numeric: tabular-nums; }}
+.purf-specimen .l {{ font-size: 13px; color: var(--muted); }}
 
+/* ---------- Page header ---------- */
+.purf-page-head {{ margin: 0 0 24px; }}
+.purf-page-head .eyebrow {{ color: var(--muted); font-size: 13px; font-weight: 400; }}
+.purf-page-head h1 {{ font-size: 2.25rem; margin: 4px 0 8px; padding: 0; font-weight: 500; color: var(--text); letter-spacing: -0.02em; line-height: 1.15; }}
+.purf-page-head p {{ color: var(--text2); margin: 0; max-width: 52rem; line-height: 1.6; }}
+.grad-text {{ color: var(--text); }}
+
+/* ---------- Cards and figures ---------- */
 .purf-card {{
-  position: relative; border-radius: var(--radius); padding: 20px 22px; height: 100%;
-  background: linear-gradient(180deg, rgba(20,28,61,0.78), rgba(15,22,49,0.62));
-  border: 1px solid var(--border); box-shadow: 0 16px 40px rgba(0,0,0,0.28);
-  backdrop-filter: blur(10px); transition: transform .2s ease, border-color .2s ease;
+  position: relative; border-radius: var(--radius); padding: 20px 24px; height: 100%;
+  background: var(--surface); border: 1px solid var(--border);
 }}
-.purf-card:hover {{ transform: translateY(-2px); border-color: rgba(124,92,255,0.40); }}
-.purf-card h4 {{ margin: 0 0 6px; font-size: 1.05rem; color: var(--text); }}
-.purf-card p {{ margin: 0; color: var(--text2); font-size: .93rem; line-height: 1.55; }}
-.purf-metric {{
-  position: relative; border-radius: var(--radius); padding: 18px 20px 16px; overflow: hidden;
-  background: linear-gradient(180deg, rgba(20,28,61,0.85), rgba(15,22,49,0.65)); border: 1px solid var(--border);
-}}
-.purf-metric::before {{ content: ""; position: absolute; left: 0; top: 0; height: 2px; width: 100%;
-  background: linear-gradient(90deg, var(--accent, var(--brand)), transparent); }}
-.purf-metric .label {{ color: var(--muted); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }}
-.purf-metric .value {{ font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.35rem, 2.1vw, 2rem); font-weight: 700; color: var(--text); margin-top: 6px; line-height: 1.1; white-space: nowrap; }}
-.purf-metric .sub {{ color: var(--text2); font-size: .84rem; margin-top: 4px; }}
-.purf-metric .icon {{ position: absolute; right: 16px; top: 14px; font-size: 1.25rem; opacity: .8; }}
+.purf-card h4 {{ margin: 0 0 8px; padding: 0; font-size: 16px; color: var(--text); }}
+.purf-card p {{ margin: 0; color: var(--text2); font-size: 14px; line-height: 1.6; }}
+.purf-card b {{ color: var(--text); font-weight: 500; }}
+.purf-metric {{ position: relative; border-radius: var(--radius); padding: 16px 20px; background: var(--surface); border: 1px solid var(--border); height: 100%; }}
+.purf-metric .label {{ color: var(--text2); font-size: 13px; font-weight: 400; }}
+.purf-metric .value {{ font-family: var(--mono); font-size: clamp(1.4rem, 2vw, 1.875rem); font-weight: 500; color: var(--text);
+  margin-top: 8px; line-height: 1.1; white-space: nowrap; font-variant-numeric: tabular-nums; }}
+.purf-metric .sub {{ color: var(--muted); font-size: 13px; margin-top: 8px; }}
 
-.purf-section {{ margin: 34px 0 14px; display: flex; align-items: baseline; gap: 14px; }}
-.purf-section h3 {{ margin: 0; font-size: 1.35rem; }}
-.purf-section .line {{ flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }}
-.purf-section .note {{ color: var(--muted); font-size: .85rem; }}
+.purf-section {{ margin: 48px 0 16px; display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }}
+.purf-section h3 {{ margin: 0; padding: 0; font-size: 20px; color: var(--text); }}
+.purf-section .line {{ flex: 1; height: 1px; background: var(--border); min-width: 24px; }}
+.purf-section .note {{ color: var(--muted); font-size: 13px; }}
 
-.badge {{ display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: .75rem;
-  font-weight: 600; border: 1px solid var(--border); color: var(--text2); background: rgba(20,28,61,0.7); }}
-.badge.trax {{ color: white; border: none; background: linear-gradient(135deg, var(--brand), var(--brand2)); box-shadow: 0 0 18px rgba(124,92,255,.45); }}
-.badge.good {{ color: #b8f5b8; border-color: rgba(12,163,12,.5); }}
-.badge.bad {{ color: #ffc0c0; border-color: rgba(208,59,59,.6); }}
+.badge {{ display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 12px;
+  font-weight: 400; border: 1px solid var(--border-strong); color: var(--text2); background: transparent; font-family: var(--mono); }}
+.badge.trax {{ color: var(--accent); border-color: rgba(127,167,238,0.35); }}
+.badge.good {{ color: #8fd9b0; border-color: rgba(76,195,138,.35); }}
+.badge.bad {{ color: #f0a0a2; border-color: rgba(229,72,77,.45); }}
 
-/* Prediction orb */
-.purf-orb-wrap {{ display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 0 4px; }}
-.purf-orb {{
-  position: relative; width: 210px; height: 210px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(circle at 35% 30%, rgba(124,92,255,0.55), rgba(15,22,49,0.95) 62%);
-  box-shadow: 0 0 0 1px rgba(148,163,255,0.25), 0 0 60px rgba(124,92,255,0.45), 0 0 120px rgba(34,211,238,0.18), inset 0 0 40px rgba(34,211,238,0.18);
-  animation: orbIn .55s cubic-bezier(.2,.9,.3,1.3);
-}}
-.purf-orb::before {{
-  content: ""; position: absolute; inset: -8px; border-radius: 50%; padding: 2px;
-  background: conic-gradient(var(--brand2) calc(var(--p) * 1%), rgba(148,163,255,0.12) 0);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor; mask-composite: exclude;
-}}
-@keyframes orbIn {{ from {{ transform: scale(.6); opacity: 0 }} to {{ transform: scale(1); opacity: 1 }} }}
-.purf-orb .digit {{ font-family: 'Space Grotesk', sans-serif; font-size: 128px; font-weight: 700; line-height: 1; color: white;
-  text-shadow: 0 0 30px rgba(34,211,238,0.8), 0 0 60px rgba(124,92,255,0.6); }}
-.purf-orb-caption {{ margin-top: 18px; text-align: center; }}
-.purf-orb-caption .conf {{ font-family: 'Space Grotesk', sans-serif; font-size: 2.1rem; font-weight: 700; color: white; }}
-.purf-orb-caption .lbl {{ color: var(--muted); font-size: .78rem; letter-spacing: .18em; text-transform: uppercase; }}
+/* ---------- Prediction readout: the digit, flat and large ---------- */
+.purf-read {{ display: flex; align-items: center; gap: 16px; padding: 8px 0; }}
+.purf-read .px {{ display: flex; flex-direction: column; gap: 8px; }}
+.purf-read .px img {{ width: 84px; height: 84px; image-rendering: pixelated; background: #000; border-radius: 4px; display: block;
+  box-shadow: 0 0 0 1px var(--border); }}
+.purf-read .px span {{ font-family: var(--mono); font-size: 12px; color: var(--muted); }}
+.purf-read .num {{ display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }}
+.purf-read .digit {{ font-family: var(--mono); font-size: 96px; font-weight: 500; line-height: .9; color: var(--text); font-variant-numeric: tabular-nums; }}
+.purf-read .conf {{ font-family: var(--mono); font-size: 24px; font-weight: 500; color: var(--accent); font-variant-numeric: tabular-nums; }}
+.purf-read .lbl {{ color: var(--muted); font-size: 13px; }}
 
-.purf-top3 {{ display: flex; flex-direction: column; gap: 10px; }}
-.purf-top3 .row {{ display: grid; grid-template-columns: 34px 1fr 64px; gap: 12px; align-items: center; }}
-.purf-top3 .d {{ font-family: 'Space Grotesk', sans-serif; font-size: 1.35rem; font-weight: 700; text-align: center; color: var(--text); }}
-.purf-top3 .bar {{ height: 10px; border-radius: 6px; background: rgba(148,163,255,0.10); overflow: hidden; }}
-.purf-top3 .bar span {{ display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--brand), var(--brand2)); }}
-.purf-top3 .row:not(:first-child) .bar span {{ background: #4b5583; }}
-.purf-top3 .p {{ font-family: 'JetBrains Mono', monospace; font-size: .9rem; color: var(--text2); text-align: right; }}
+.purf-top3 {{ display: flex; flex-direction: column; gap: 12px; }}
+.purf-top3 .row {{ display: grid; grid-template-columns: 24px 1fr 64px; gap: 12px; align-items: center; }}
+.purf-top3 .d {{ font-family: var(--mono); font-size: 18px; font-weight: 500; text-align: center; color: var(--text); }}
+.purf-top3 .bar {{ height: 8px; border-radius: 2px; background: rgba(237,237,237,0.06); overflow: hidden; }}
+.purf-top3 .bar span {{ display: block; height: 100%; border-radius: 2px; background: var(--accent); }}
+.purf-top3 .row:not(:first-child) .bar span {{ background: {NEUTRAL}; }}
+.purf-top3 .p {{ font-family: var(--mono); font-size: 13px; color: var(--text2); text-align: right; font-variant-numeric: tabular-nums; }}
 
-.purf-steps {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }}
-.purf-step {{ border: 1px solid var(--border); border-radius: 16px; padding: 14px; background: rgba(15,22,49,0.55); }}
-.purf-step .n {{ font-family: 'JetBrains Mono', monospace; color: var(--brand2); font-size: .78rem; }}
-.purf-step .t {{ font-weight: 600; margin-top: 4px; }}
-.purf-step .d {{ color: var(--muted); font-size: .82rem; margin-top: 4px; line-height: 1.45; }}
+.purf-steps {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }}
+.purf-step {{ border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--surface); }}
+.purf-step .n {{ font-family: var(--mono); color: var(--muted); font-size: 12px; }}
+.purf-step .t {{ font-weight: 500; margin-top: 8px; color: var(--text); }}
+.purf-step .d {{ color: var(--text2); font-size: 13px; margin-top: 4px; line-height: 1.5; }}
 
-.purf-img-tile {{ border: 1px solid var(--border); border-radius: 14px; padding: 8px; background: rgba(15,22,49,0.6); text-align: center; }}
-.purf-img-tile img {{ width: 100%; aspect-ratio: 1 / 1; object-fit: contain; background: #000; image-rendering: pixelated; border-radius: 8px; display: block; }}
-.purf-img-tile .cap {{ font-size: .78rem; color: var(--text2); margin-top: 6px; line-height: 1.35; }}
-.purf-img-tile.bad {{ border-color: rgba(208,59,59,.45); }}
+.purf-img-tile {{ border: 1px solid var(--border); border-radius: 12px; padding: 8px; background: var(--surface); text-align: center; }}
+.purf-img-tile img {{ width: 100%; aspect-ratio: 1 / 1; object-fit: contain; background: #000; image-rendering: pixelated; border-radius: 4px; display: block; }}
+.purf-img-tile .cap {{ font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.4; font-variant-numeric: tabular-nums; }}
+.purf-img-tile .cap b {{ color: var(--text); font-weight: 500; }}
+.purf-img-tile .badge {{ font-size: 11px; padding: 0 4px; margin-top: 4px; max-width: 100%; overflow: hidden; }}
+.purf-img-tile.bad {{ border-color: rgba(229,72,77,.45); }}
 
-.purf-footer {{ margin-top: 48px; padding: 18px 0 6px; border-top: 1px solid var(--border); color: var(--muted); font-size: .82rem;
+/* Empty 28x28 sheet, used where an icon would otherwise go */
+.purf-blank28 {{ width: 112px; height: 112px; border-radius: 4px; background-color: #000;
+  background-image: linear-gradient(rgba(237,237,237,0.07) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(237,237,237,0.07) 1px, transparent 1px);
+  background-size: 4px 4px; box-shadow: 0 0 0 1px var(--border-strong); margin: 0 auto; }}
+.purf-empty {{ display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; }}
+.purf-empty .cap {{ font-family: var(--mono); font-size: 12px; color: var(--muted); }}
+
+.purf-footer {{ margin-top: 64px; padding: 16px 0 8px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px;
   display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }}
-.purf-brand {{ display: flex; align-items: center; gap: 12px; padding: 6px 4px 14px; }}
-.purf-brand .logo {{ width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
-  font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: white; font-size: 20px;
-  background: linear-gradient(135deg, var(--brand), var(--brand2)); box-shadow: 0 0 22px rgba(124,92,255,.55); }}
-.purf-brand .name {{ font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.25rem; letter-spacing: .06em; color: white; }}
-.purf-brand .tag {{ color: var(--muted); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; }}
+
+@media (max-width: 760px) {{
+  .purf-grid {{ grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }}
+  .purf-hero {{ grid-template-columns: 1fr; gap: 24px; }}
+  .purf-title {{ font-size: 2.5rem; }}
+  .purf-sub {{ font-size: 16px; }}
+  .purf-specimen .px {{ width: 128px; height: 128px; }}
+  .purf-specimen .d {{ font-size: 72px; }}
+}}
 </style>
 """
 
@@ -358,10 +339,10 @@ def section(title: str, note: str = "") -> None:
     )
 
 
-def metric_card(label: str, value: str, sub: str = "", icon: str = "", accent: str = BRAND) -> str:
+def metric_card(label: str, value: str, sub: str = "", icon: str = "", accent: str | None = None) -> str:
+    """A neutral figure card. ``icon`` and ``accent`` are accepted for compatibility and ignored."""
     return (
-        f'<div class="purf-metric" style="--accent:{accent}"><div class="icon">{icon}</div>'
-        f'<div class="label">{esc(label)}</div><div class="value">{esc(value)}</div>'
+        f'<div class="purf-metric"><div class="label">{esc(label)}</div><div class="value">{esc(value)}</div>'
         f'<div class="sub">{sub}</div></div>'
     )
 
@@ -376,7 +357,8 @@ def metric_row(cards: Iterable[str]) -> None:
 
 
 def card(title: str, body: str, icon: str = "") -> str:
-    return f'<div class="purf-card"><h4>{icon} {esc(title)}</h4><p>{body}</p></div>'
+    """A text card. ``icon`` is accepted for compatibility and ignored."""
+    return f'<div class="purf-card"><h4>{esc(title)}</h4><p>{body}</p></div>'
 
 
 def badge(text: str, kind: str = "") -> str:
@@ -393,19 +375,30 @@ def image_grid(tiles: list[str], columns: int = 6) -> None:
     import streamlit as st
 
     st.markdown(
-        f'<div style="display:grid;grid-template-columns:repeat({columns},minmax(0,1fr));gap:10px">'
+        f'<div class="purf-grid" style="--cols:{columns};display:grid;grid-template-columns:repeat({columns},minmax(0,1fr));gap:8px">'
         + "".join(tiles) + "</div>",
         unsafe_allow_html=True,
     )
 
 
-def prediction_orb(digit: int, confidence: float, label: str = "confidence") -> str:
+def prediction_readout(digit: int, confidence: float, label: str = "confidence", img: np.ndarray | None = None) -> str:
+    """The predicted digit set large and flat, with its confidence and, optionally, the 28x28 input beside it."""
+    px = (f'<div class="px"><img src="{png_data_uri(img, 4)}" alt="28 by 28 model input"/><span>28×28 input</span></div>'
+          if img is not None else "")
     return (
-        f'<div class="purf-orb-wrap"><div class="purf-orb" style="--p:{confidence * 100:.1f}">'
-        f'<div class="digit">{digit}</div></div>'
-        f'<div class="purf-orb-caption"><div class="conf">{confidence * 100:.1f}%</div>'
-        f'<div class="lbl">{esc(label)}</div></div></div>'
+        f'<div class="purf-read">{px}<div class="num"><div class="digit">{digit}</div>'
+        f'<div class="conf">{confidence * 100:.1f}%</div><div class="lbl">{esc(label)}</div></div></div>'
     )
+
+
+# Backwards-compatible name
+prediction_orb = prediction_readout
+
+
+def blank28(caption: str = "") -> str:
+    """An empty 28x28 sheet: the lab's stand-in for an icon in empty states."""
+    cap = f'<div class="cap">{esc(caption)}</div>' if caption else ""
+    return f'<div class="purf-blank28"></div>{cap}'
 
 
 def top3_bars(top3: list[tuple[int, float]]) -> str:
@@ -423,7 +416,7 @@ def footer() -> None:
     from ..config import LAB_NAME, MODEL_NAME
 
     st.markdown(
-        f'<div class="purf-footer"><span>{LAB_NAME} · handwritten digit intelligence lab · powered by {MODEL_NAME}</span>'
+        f'<div class="purf-footer"><span>{LAB_NAME} · handwritten digit lab · model {MODEL_NAME}</span>'
         f"<span>MNIST via Kaggle (hojjatk/mnist-dataset) · TensorFlow · scikit-learn · Streamlit</span></div>",
         unsafe_allow_html=True,
     )

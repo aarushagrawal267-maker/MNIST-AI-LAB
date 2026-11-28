@@ -135,7 +135,7 @@ with tab_train:
                 logs_hist[k].append(float(logs.get(k, np.nan)))
             prog.progress((epoch + 1) / epochs, text=f"Epoch {epoch + 1}/{epochs} · {time.time() - t0:.0f}s elapsed")
             ph[0].markdown(T.metric_card("Train acc.", f"{logs['accuracy'] * 100:.2f}%", f"epoch {epoch + 1}"), unsafe_allow_html=True)
-            ph[1].markdown(T.metric_card("Val. acc.", f"{logs['val_accuracy'] * 100:.2f}%", "", "", T.BRAND_2), unsafe_allow_html=True)
+            ph[1].markdown(T.metric_card("Val. acc.", f"{logs['val_accuracy'] * 100:.2f}%", ""), unsafe_allow_html=True)
             ph[2].markdown(T.metric_card("Val. loss", f"{logs['val_loss']:.4f}", ""), unsafe_allow_html=True)
             ph[3].markdown(T.metric_card("Learning rate", f"{logs['learning_rate']:.1e}", ""), unsafe_allow_html=True)
             acc, loss, _ = C.history_figs(logs_hist)
@@ -202,7 +202,7 @@ with tab_exp:
             labels = [f"{r.experiment_id} · {r.optimizer} lr={r.learning_rate:g} bs={int(r.batch_size)}" for r in tune.itertuples()]
             fig = go.Figure(go.Bar(
                 y=labels, x=(1 - tune["val_accuracy"]) * 100, orientation="h",
-                marker=dict(color=[T.BRAND_2 if e == best_id else T.SERIES[0] for e in tune["experiment_id"]], cornerradius=3),
+                marker=dict(color=[T.ACCENT if e == best_id else T.NEUTRAL for e in tune["experiment_id"]], cornerradius=3),
                 customdata=np.stack([tune["architecture"], tune["val_accuracy"] * 100, tune["train_time_s"]], axis=1),
                 hovertemplate="%{y}<br>%{customdata[0]}<br>val acc %{customdata[1]:.2f}%<br>%{customdata[2]:.0f}s<extra></extra>",
             ))
@@ -235,7 +235,7 @@ with tab_curves:
         e = mm.get_entry(k)
         T.metric_row([
             T.metric_card("Epochs trained", str(len(h["loss"])), "early stopping on val loss"),
-            T.metric_card("Best val. accuracy", f"{max(h['val_accuracy']) * 100:.2f}%", "", "", T.BRAND_2),
+            T.metric_card("Best val. accuracy", f"{max(h['val_accuracy']) * 100:.2f}%", ""),
             T.metric_card("Lowest val. loss", f"{min(h['val_loss']):.4f}", ""),
             T.metric_card("Training time", f"{(e.get('train_time_s') or 0) / 60:.1f} min", f"{e.get('train_samples', 0):,} images"),
         ])
@@ -258,7 +258,7 @@ with tab_models:
     for k, v in ms.items():
         rows.append({
             "key": k, "name": v["display_name"], "type": v.get("model_type"), "family": v["family"],
-            f"{MODEL_NAME}": "⚡" if k == prod else "", "val accuracy": v.get("val_accuracy"),
+            f"{MODEL_NAME}": "yes" if k == prod else "", "val accuracy": v.get("val_accuracy"),
             "parameters": v.get("params") or None, "train time (s)": v.get("train_time_s"),
             "file": v["path"], "custom": bool(v.get("custom")),
         })

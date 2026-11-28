@@ -5,58 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>PURF Draw Canvas</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap');
   :root {
-    --bg: #05070f;
-    --panel: rgba(17, 24, 48, 0.72);
-    --line: rgba(129, 140, 248, 0.22);
-    --text: #e2e8ff;
-    --muted: #8b95c9;
-    --accent: #7c5cff;
-    --accent2: #22d3ee;
-    --accent3: #f472b6;
+    --panel: #232325;
+    --line: rgba(237, 237, 237, 0.14);
+    --text: #ededed;
+    --muted: #85858b;
+    --accent: #7fa7ee;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: transparent; color: var(--text);
-    font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif; -webkit-user-select: none; user-select: none; }
-  .wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 6px 4px 10px; }
-  .stage { position: relative; width: min(100%, var(--size)); aspect-ratio: 1 / 1; border-radius: 22px; padding: 2px;
-    background: conic-gradient(from var(--angle, 0deg), var(--accent), var(--accent2), var(--accent3), var(--accent));
-    animation: spin 8s linear infinite; box-shadow: 0 0 40px rgba(124, 92, 255, 0.35), 0 0 90px rgba(34, 211, 238, 0.12); }
-  @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
-  @keyframes spin { to { --angle: 360deg; } }
-  .inner { position: relative; width: 100%; height: 100%; border-radius: 20px; overflow: hidden; background: #000; }
+    font-family: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif; -webkit-user-select: none; user-select: none; }
+  .wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 4px 4px 8px; }
+  .stage { position: relative; width: min(100%, var(--size)); aspect-ratio: 1 / 1; border-radius: 14px; padding: 1px;
+    background: var(--line); }
+  .inner { position: relative; width: 100%; height: 100%; border-radius: 13px; overflow: hidden; background: #000; }
   canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
   #data { visibility: hidden; }
   .hint { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    pointer-events: none; color: rgba(165, 180, 252, 0.55); font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase;
-    transition: opacity .35s ease; gap: 8px; }
-  .hint b { font-size: 64px; font-weight: 600; color: rgba(165, 180, 252, 0.18); letter-spacing: 0; }
-  .cursor { position: absolute; pointer-events: none; border-radius: 50%; border: 1.5px solid rgba(34, 211, 238, .85);
-    box-shadow: 0 0 12px rgba(34, 211, 238, .6); transform: translate(-50%, -50%); opacity: 0; transition: opacity .15s; }
+    pointer-events: none; color: var(--muted); font-size: 14px; transition: opacity .2s var(--ease); gap: 8px; }
+  .hint b { font-family: 'IBM Plex Mono', monospace; font-size: 64px; font-weight: 400; color: rgba(237, 237, 237, 0.14); }
+  .cursor { position: absolute; pointer-events: none; border-radius: 50%; border: 1px solid rgba(237, 237, 237, .6);
+    transform: translate(-50%, -50%); opacity: 0; transition: opacity .15s var(--ease); }
   .toolbar { width: min(100%, var(--size)); display: flex; gap: 8px; align-items: stretch; }
   .toolbar .slider { flex: 1; min-width: 0; }
   .toolbar input[type=range] { flex: 1; width: auto; min-width: 60px; }
-  .btn.icon { padding: 9px 11px; }
-  .btn.wide { width: min(100%, var(--size)); justify-content: center; padding: 13px 22px; font-size: 16px; }
-  .btn { appearance: none; border: 1px solid var(--line); background: var(--panel); color: var(--text); padding: 9px 14px;
-    border-radius: 12px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: inline-flex; gap: 7px;
-    align-items: center; transition: all .18s ease; backdrop-filter: blur(8px); }
-  .btn:hover:not(:disabled) { border-color: rgba(34, 211, 238, .6); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(34, 211, 238, .15); }
+  .btn.icon { padding: 8px 12px; }
+  .btn.wide { width: min(100%, var(--size)); justify-content: center; padding: 12px 20px; font-size: 15px; }
+  .btn { appearance: none; border: 1px solid var(--line); background: var(--panel); color: var(--text); padding: 8px 12px;
+    border-radius: 8px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: inline-flex; gap: 8px;
+    align-items: center; transition: background-color .15s var(--ease), border-color .15s var(--ease), transform .12s var(--ease); }
+  .btn:hover:not(:disabled) { border-color: rgba(237, 237, 237, .28); background: #2a2a2d; }
+  .btn:active:not(:disabled) { transform: scale(0.98); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .btn:disabled { opacity: .4; cursor: not-allowed; }
-  .btn.primary { background: linear-gradient(135deg, var(--accent), #4f46e5 45%, var(--accent2)); border: none; color: white;
-    font-weight: 700; padding: 11px 22px; font-size: 15px; letter-spacing: .02em; box-shadow: 0 8px 28px rgba(124, 92, 255, .45); }
-  .btn.primary:hover:not(:disabled) { box-shadow: 0 10px 36px rgba(34, 211, 238, .45); }
-  .slider { display: flex; align-items: center; gap: 10px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 12px;
+  .btn.primary { background: var(--text); border-color: var(--text); color: #141415; }
+  .btn.primary:hover:not(:disabled) { background: #ffffff; border-color: #ffffff; }
+  .slider { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
     background: var(--panel); font-size: 13px; color: var(--muted); }
-  input[type=range] { -webkit-appearance: none; appearance: none; width: 110px; height: 4px; border-radius: 4px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2)); outline: none; }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: white;
-    box-shadow: 0 0 10px var(--accent2); cursor: pointer; }
-  input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: white; border: none; cursor: pointer; }
-  .val { min-width: 24px; color: var(--text); font-variant-numeric: tabular-nums; }
-  .kbd { font-size: 11.5px; color: var(--muted); text-align: center; opacity: .8; }
-  .kbd span { border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; margin: 0 2px; }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 110px; height: 4px; border-radius: 2px;
+    background: rgba(237, 237, 237, 0.2); outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--text); cursor: pointer; }
+  input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--text); border: none; cursor: pointer; }
+  input[type=range]:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .val { min-width: 24px; color: var(--text); font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+  .kbd { font-size: 12px; color: var(--muted); text-align: center; }
+  .kbd span { font-family: 'IBM Plex Mono', monospace; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 6px; margin: 0 2px; }
   svg { width: 16px; height: 16px; }
 </style>
 </head>
@@ -66,24 +61,24 @@
     <div class="inner" id="inner">
       <canvas id="view"></canvas>
       <canvas id="data"></canvas>
-      <div class="hint" id="hint"><b>0–9</b>draw a digit here</div>
+      <div class="hint" id="hint"><b>0–9</b>Draw one digit here</div>
       <div class="cursor" id="cursor"></div>
     </div>
   </div>
   <div class="toolbar">
     <div class="slider" title="Brush thickness">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
       <input id="brush" type="range" min="6" max="48" step="1" /> <span class="val" id="brushVal"></span>
     </div>
     <button class="btn icon" id="undo" title="Undo (Ctrl+Z)" aria-label="Undo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg></button>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg></button>
     <button class="btn icon" id="redo" title="Redo (Ctrl+Y)" aria-label="Redo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 15-6.7L21 13"/></svg></button>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 15-6.7L21 13"/></svg></button>
     <button class="btn" id="clear" title="Clear (Esc)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Clear</button>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Clear</button>
   </div>
   <button class="btn primary wide" id="predict" title="Predict (Enter)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z"/></svg>Predict digit</button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>Predict digit</button>
   <div class="kbd"><span>Enter</span> predict · <span>Ctrl+Z</span> undo · <span>Esc</span> clear</div>
 </div>
 
@@ -136,7 +131,7 @@
 
   function drawGuides() {
     vctx.save();
-    vctx.strokeStyle = "rgba(124,92,255,0.10)";
+    vctx.strokeStyle = "rgba(237,237,237,0.06)";
     vctx.lineWidth = 1;
     for (let i = 1; i < 8; i++) {
       const p = (RES / 8) * i;
@@ -144,18 +139,17 @@
       vctx.beginPath(); vctx.moveTo(0, p); vctx.lineTo(RES, p); vctx.stroke();
     }
     vctx.setLineDash([6, 8]);
-    vctx.strokeStyle = "rgba(34,211,238,0.22)";
+    vctx.strokeStyle = "rgba(237,237,237,0.16)";
     const m = RES * 0.14;
     vctx.strokeRect(m, m, RES - 2 * m, RES - 2 * m);
     vctx.restore();
   }
 
-  function strokePath(ctx, s, glow) {
+  function strokePath(ctx, s) {
     const pts = s.points;
     ctx.save();
     ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.lineWidth = s.width;
     ctx.strokeStyle = "#fff"; ctx.fillStyle = "#fff";
-    if (glow) { ctx.shadowColor = "rgba(34,211,238,0.85)"; ctx.shadowBlur = 18; }
     if (pts.length === 1) {
       ctx.beginPath(); ctx.arc(pts[0].x, pts[0].y, s.width / 2, 0, Math.PI * 2); ctx.fill();
     } else {
@@ -173,7 +167,7 @@
   function redraw() {
     resetCanvas(vctx); drawGuides(); resetCanvas(dctx);
     const all = current ? strokes.concat([current]) : strokes;
-    all.forEach(s => { strokePath(vctx, s, true); strokePath(dctx, s, false); });
+    all.forEach(s => { strokePath(vctx, s); strokePath(dctx, s); });
     hint.style.opacity = all.length ? 0 : 1;
     document.getElementById("undo").disabled = strokes.length === 0;
     document.getElementById("redo").disabled = redoStack.length === 0;

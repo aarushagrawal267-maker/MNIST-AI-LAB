@@ -34,10 +34,10 @@ wrong = np.where(pred != y)[0]
 m = C.metrics(key, split)
 
 T.metric_row([
-    T.metric_card("Misclassified", f"{len(wrong):,}", f"of {len(y):,} images ({len(wrong) / len(y) * 100:.2f}%)", "❌", T.CRITICAL),
-    T.metric_card("Mean confidence when wrong", f"{conf[wrong].mean() * 100:.1f}%" if len(wrong) else "—", "", "🤔", T.WARNING),
-    T.metric_card("Mean confidence when right", f"{conf[pred == y].mean() * 100:.2f}%", "", "✅", T.GOOD),
-    T.metric_card("Confidently wrong", f"{int((conf[wrong] > 0.9).sum())}", "errors with > 90% confidence", "⚠️", T.SERIOUS),
+    T.metric_card("Misclassified", f"{len(wrong):,}", f"of {len(y):,} images ({len(wrong) / len(y) * 100:.2f}%)"),
+    T.metric_card("Mean confidence when wrong", f"{conf[wrong].mean() * 100:.1f}%" if len(wrong) else "—", ""),
+    T.metric_card("Mean confidence when right", f"{conf[pred == y].mean() * 100:.2f}%", ""),
+    T.metric_card("Confidently wrong", f"{int((conf[wrong] > 0.9).sum())}", "errors with > 90% confidence"),
 ])
 
 T.section("Which digits get confused", "measured from this model's predictions")
@@ -67,9 +67,9 @@ if tc:
     top_pairs = sorted(sym.items(), key=lambda kv: -kv[1])[:3]
     st.markdown(T.card("Observed pattern",
                        "The most-confused pairs (both directions combined) are "
-                       + ", ".join(f"<b style='color:white'>{p[0]}↔{p[1]}</b> ({n})" for p, n in top_pairs)
+                       + ", ".join(f"<b style='color:var(--text)'>{p[0]}↔{p[1]}</b> ({n})" for p, n in top_pairs)
                        + ". Compare with the class-similarity analysis on the Dataset Explorer: confusions concentrate on "
-                         "digits whose shapes overlap when written loosely.", "🔎"), unsafe_allow_html=True)
+                         "digits whose shapes overlap when written loosely."), unsafe_allow_html=True)
 
 T.section("Error gallery", "filter the misclassified images")
 f1, f2, f3, f4 = st.columns([1, 1, 1.6, 1])
@@ -97,8 +97,8 @@ for i in show:
     order = np.argsort(-proba[i])
     alts = " · ".join(f"{d}: {proba[i][d] * 100:.1f}%" for d in order[1:3])
     tiles.append(T.image_tile(
-        x[i], f"actual <b style='color:#8ef08e'>{y[i]}</b> · predicted <b style='color:#ff9b9b'>{pred[i]}</b>"
-              f"<br>{conf[i] * 100:.1f}% confident<br><span style='color:#7f89b8'>alt {alts}</span><br>#{i}",
+        x[i], f"actual <b style='color:#8fd9b0'>{y[i]}</b> · predicted <b style='color:#f0a0a2'>{pred[i]}</b>"
+              f"<br>{conf[i] * 100:.1f}% confident<br><span style='color:var(--muted)'>alt {alts}</span><br>#{i}",
         upscale=4, bad=True))
 if tiles:
     T.image_grid(tiles, columns=6)
