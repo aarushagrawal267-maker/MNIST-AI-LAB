@@ -1,4 +1,4 @@
-"""PURF — handwritten digit intelligence lab.
+"""PURF — handwritten digit lab.
 
 Launch with:  streamlit run app.py
 """
@@ -10,7 +10,7 @@ from src.config import LAB_NAME
 from src.ui import common, theme
 
 st.set_page_config(
-    page_title=f"{LAB_NAME} · Digit Intelligence Lab",
+    page_title=f"{LAB_NAME} · Handwritten Digit Lab",
     page_icon="assets/icon.svg",
     layout="wide",
     initial_sidebar_state="expanded",

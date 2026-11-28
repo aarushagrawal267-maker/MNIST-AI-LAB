@@ -67,25 +67,25 @@ with right:
         st.warning(error)
     if result is None:
         st.markdown(
-            f"""<div class="purf-card" style="min-height:420px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
-            <div style="font-size:64px;opacity:.5">✍️</div>
-            <h4 style="margin-top:12px">Waiting for your handwriting</h4>
-            <p>Draw a digit on the canvas{' — predictions update live' if live else ' and press <b>Predict</b>'}.</p></div>""",
+            f"""<div class="purf-card purf-empty" style="min-height:420px">
+            {T.blank28("28×28 · empty")}
+            <h4 style="margin:0">Waiting for your handwriting</h4>
+            <p>Draw a digit on the canvas{', predictions update live' if live else ' and press <b>Predict</b>'}.</p></div>""",
             unsafe_allow_html=True,
         )
     else:
         r = result
         o1, o2 = st.columns([1, 1.15])
         with o1:
-            st.markdown(T.prediction_orb(r.digit, r.confidence, f"{r.certainty_label} · {C.label(model_key)}"),
+            st.markdown(T.prediction_readout(r.digit, r.confidence, f"{r.certainty_label} · {C.label(model_key)}",
+                                              r.processed.image if r.processed is not None else None),
                         unsafe_allow_html=True)
         with o2:
-            st.markdown("<div style='height:18px'></div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='purf-card'><h4>Top-3 predictions</h4><div style='height:8px'></div>"
+            st.markdown(f"<div class='purf-card'><h4>Top 3 predictions</h4><div style='height:8px'></div>"
                         f"{T.top3_bars(r.top3)}</div>", unsafe_allow_html=True)
             st.write("")
             st.markdown(
-                f"<div class='purf-card' style='padding:14px 18px'><p>Inference <b style='color:white'>{r.latency_ms:.1f} ms</b>"
+                f"<div class='purf-card' style='padding:16px 20px'><p>Inference <b style='font-family:var(--mono)'>{r.latency_ms:.1f} ms</b>"
                 f" · 28×28 input · processed on CPU</p></div>", unsafe_allow_html=True)
         C.plot(C.prob_bar(r.probabilities, height=270), key="draw_prob")
         for w in r.warnings:
@@ -133,7 +133,7 @@ if ss.draw_history:
     for i, h in enumerate(ss.draw_history[:16]):
         with cols[i % 8]:
             tag = "" if h["feedback"] is None else (" ✓" if h["feedback"] else " ✗")
-            st.markdown(T.image_tile(h["img"], f"<b style='color:white'>{h['digit']}</b> · {h['conf'] * 100:.1f}%{tag}", upscale=3,
+            st.markdown(T.image_tile(h["img"], f"<b>{h['digit']}</b> · {h['conf'] * 100:.1f}%{tag}", upscale=3,
                                      bad=h["feedback"] is False), unsafe_allow_html=True)
             if h["feedback"] is None:
                 a, b = st.columns(2)

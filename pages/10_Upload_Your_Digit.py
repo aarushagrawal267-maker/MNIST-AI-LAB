@@ -51,8 +51,8 @@ with c3:
 
 if up is None:
     st.markdown(
-        "<div class='purf-card' style='text-align:center;padding:46px'><div style='font-size:52px;opacity:.55'>🖼️</div>"
-        "<h4 style='margin-top:10px'>Upload an image to begin</h4><p>PNG · JPG · JPEG — one digit per image</p></div>",
+        f"<div class='purf-card purf-empty' style='padding:48px'>{T.blank28('28×28 · empty')}"
+        "<h4 style='margin:0'>Upload an image to begin</h4><p>PNG · JPG · JPEG, one digit per image</p></div>",
         unsafe_allow_html=True)
     st.stop()
 
@@ -77,7 +77,7 @@ with right:
     st.markdown(T.prediction_orb(result.digit, result.confidence, f"{result.certainty_label} · {C.label(model_key)}"),
                 unsafe_allow_html=True)
     st.write("")
-    st.markdown(f"<div class='purf-card'><h4>Top-3 predictions</h4><div style='height:6px'></div>{T.top3_bars(result.top3)}</div>",
+    st.markdown(f"<div class='purf-card'><h4>Top 3 predictions</h4><div style='height:8px'></div>{T.top3_bars(result.top3)}</div>",
                 unsafe_allow_html=True)
 for w in result.warnings:
     st.info(w, icon=":material/info:")

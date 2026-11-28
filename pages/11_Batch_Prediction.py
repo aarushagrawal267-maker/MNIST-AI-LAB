@@ -50,8 +50,8 @@ with c2:
 
 if not files:
     st.markdown(
-        "<div class='purf-card' style='text-align:center;padding:46px'><div style='font-size:52px;opacity:.55'>📚</div>"
-        "<h4 style='margin-top:10px'>Upload several images or a ZIP to begin</h4><p>PNG · JPG · JPEG · ZIP (max 500 files, 50 MB extracted)</p></div>",
+        f"<div class='purf-card purf-empty' style='padding:48px'>{T.blank28('28×28 · empty')}"
+        "<h4 style='margin:0'>Upload several images or a ZIP to begin</h4><p>PNG · JPG · JPEG · ZIP (max 500 files, 50 MB extracted)</p></div>",
         unsafe_allow_html=True)
     st.stop()
 
@@ -63,10 +63,10 @@ ok = [r for r in rows if r["status"] == "ok"]
 bad = [r for r in rows if r["status"] != "ok"]
 
 T.metric_row([
-    T.metric_card("Files received", str(len(rows)), "after ZIP expansion", "📥", T.SERIES[0]),
-    T.metric_card("Predicted", str(len(ok)), "valid images", "✅", T.GOOD),
-    T.metric_card("Skipped", str(len(bad)), "invalid / unsupported", "⚠️", T.WARNING),
-    T.metric_card("Mean confidence", f"{np.mean([r['confidence'] for r in ok]) * 100:.1f}%" if ok else "—", "", "🎯", T.BRAND),
+    T.metric_card("Files received", str(len(rows)), "after ZIP expansion"),
+    T.metric_card("Predicted", str(len(ok)), "valid images"),
+    T.metric_card("Skipped", str(len(bad)), "invalid / unsupported"),
+    T.metric_card("Mean confidence", f"{np.mean([r['confidence'] for r in ok]) * 100:.1f}%" if ok else "—", ""),
 ])
 
 if ok:
@@ -104,7 +104,7 @@ if ok:
         fig.update_layout(xaxis_title="confidence (%)", yaxis_title="images")
         C.plot(T.style_fig(fig, 300, "Confidence distribution"), key="b_conf")
     T.section("Gallery")
-    T.image_grid([T.image_tile(r["processed"], f"<b style='color:white'>{r['prediction']}</b> · {r['confidence'] * 100:.1f}%"
+    T.image_grid([T.image_tile(r["processed"], f"<b style='color:var(--text)'>{r['prediction']}</b> · {r['confidence'] * 100:.1f}%"
                                f"<br><span style='color:#7f89b8'>{T.esc(r['file'].split('/')[-1][:22])}</span>", upscale=3)
                   for r in ok[:48]], columns=8)
 

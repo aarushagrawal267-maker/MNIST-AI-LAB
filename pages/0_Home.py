@@ -18,15 +18,35 @@ test_m = C.metrics(prod, "test") if prod else None
 stats = C.eda_stats()
 
 status = (f'<span class="dot"></span>{MODEL_NAME} online · {T.esc(prod_entry.get("display_name", ""))}'
-          if prod else f'<span class="dot"></span>{MODEL_NAME} awaiting training')
+          if prod else f'<span class="dot off"></span>{MODEL_NAME} awaiting training')
+
+
+def _specimen() -> str:
+    """The first held-out test image, its 28x28 pixels and what the production model reads."""
+    if not prod:
+        return ""
+    try:
+        sp = C.get_splits()
+        img, y = sp.x_test[0], int(sp.y_test[0])
+        p = C.get_predictor().predict_array(img[None])[0]
+    except Exception:  # dataset or model not available: the hero simply has no specimen
+        return ""
+    return (f'<div class="purf-specimen"><img class="px" src="{T.png_data_uri(img, 6)}" alt="MNIST test image 0"/>'
+            f'<div class="read"><div class="d">{int(p.argmax())}</div><div class="c">{p.max() * 100:.1f}%</div>'
+            f'<div class="l">test image 0 · labelled {y}</div></div></div>')
+
+
 st.markdown(
     f"""
 <div class="purf-hero">
-  <div class="purf-kicker">{status}</div>
-  <div class="purf-title">{LAB_NAME}<br/>reads your handwriting.</div>
-  <div class="purf-sub">An end-to-end deep-learning laboratory for handwritten digit recognition. Explore 70,000
-  MNIST digits, train and compare five families of models, look inside the network with explainable AI — then draw a
-  digit and watch <b style="color:white">{MODEL_NAME}</b>, the lab's convolutional neural network, recognise it in milliseconds.</div>
+  <div>
+    <div class="purf-kicker">{status}</div>
+    <div class="purf-title">{LAB_NAME} reads<br/>your handwriting</div>
+    <div class="purf-sub">A laboratory for handwritten digit recognition. Explore 70,000 MNIST digits, train and
+    compare five families of models, look inside the network with explainable AI, then draw a digit and watch
+    <b>{MODEL_NAME}</b>, the lab's convolutional neural network, read it in milliseconds.</div>
+  </div>
+  {_specimen()}
 </div>
 """,
     unsafe_allow_html=True,
@@ -41,22 +61,22 @@ c3.page_link("pages/5_Model_Comparison.py", label="Compare models", icon=":mater
 T.section("Lab at a glance")
 n_total = stats["n_total"] if stats else 70000
 T.metric_row([
-    T.metric_card("Dataset", f"{n_total:,}", "MNIST images · Kaggle", "🗂️", T.SERIES[0]),
-    T.metric_card("Classes", "10", "digits 0 – 9", "🔢", T.SERIES[2]),
-    T.metric_card("Models trained", str(len(ms)), "5 model families", "🧪", T.SERIES[3]),
-    T.metric_card("Validation acc.", f"{val_acc * 100:.2f}%" if val_acc else "—", f"{MODEL_NAME} · model selection", "🎯", T.BRAND),
+    T.metric_card("Dataset", f"{n_total:,}", "MNIST images · Kaggle"),
+    T.metric_card("Classes", "10", "digits 0 – 9"),
+    T.metric_card("Models trained", str(len(ms)), "5 model families"),
+    T.metric_card("Validation acc.", f"{val_acc * 100:.2f}%" if val_acc else "—", f"{MODEL_NAME} · model selection"),
     T.metric_card("Test acc.", f"{test_m['accuracy'] * 100:.2f}%" if test_m else "—",
-                  "held-out 10,000 images" if test_m else "run final evaluation", "🏁", T.BRAND_2),
+                  "held-out 10,000 images" if test_m else "run final evaluation"),
 ])
 
 # ---------------------------------------------------------------- leaderboard
 if ms:
     T.section("Model leaderboard", "validation error rate — lower is better")
     rows = sorted(ms.items(), key=lambda kv: kv[1]["val_accuracy"])
-    names = [v["display_name"] + (f"  ⚡ {MODEL_NAME}" if k == prod else "") for k, v in rows]
+    names = [v["display_name"] + (f" · {MODEL_NAME}" if k == prod else "") for k, v in rows]
     err = [(1 - v["val_accuracy"]) * 100 for _, v in rows]
     test_acc = [(C.metrics(k, "test") or {}).get("accuracy") for k, _ in rows]
-    colors = [T.BRAND_2 if k == prod else T.SERIES[0] for k, _ in rows]
+    colors = [T.ACCENT if k == prod else T.NEUTRAL for k, _ in rows]
     fig = go.Figure(go.Bar(
         y=names, x=err, orientation="h", marker=dict(color=colors, cornerradius=4),
         text=[f"{e:.2f}%" for e in err], textposition="outside", textfont=dict(color=T.TEXT_2), cliponaxis=False,
@@ -77,13 +97,13 @@ if ms:
             st.markdown(T.card(
                 f"Why {MODEL_NAME} wins",
                 f"Convolutions share weights across the image and learn local stroke detectors, so {MODEL_NAME} "
-                f"makes <b style='color:white'>{reduction:.0f}% fewer validation errors</b> than the best classical "
-                f"model ({T.esc(best_classical['display_name'])}).", "🧠"), unsafe_allow_html=True)
+                f"makes <b style='color:var(--text)'>{reduction:.0f}% fewer validation errors</b> than the best classical "
+                f"model ({T.esc(best_classical['display_name'])})."), unsafe_allow_html=True)
             st.write("")
         st.markdown(T.card(
             "Honest evaluation",
             "Models are selected on a stratified 6,000-image validation split. The original 10,000-image test set "
-            "is never used for tuning — it is only scored once, for the final report.", "⚖️"), unsafe_allow_html=True)
+            "is never used for tuning — it is only scored once, for the final report."), unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- live strip
 if prod:
@@ -102,7 +122,7 @@ if prod:
         d, ok = int(p.argmax()), int(p.argmax()) == int(splits.y_test[i])
         tiles.append(T.image_tile(
             splits.x_test[i],
-            f"<b style='color:white;font-size:1rem'>{d}</b> · {p.max() * 100:.1f}%<br>"
+            f"<b>{d}</b> · {p.max() * 100:.1f}%<br>"
             + (T.badge("correct", "good") if ok else T.badge(f"label {splits.y_test[i]}", "bad")),
             upscale=4, bad=not ok))
     T.image_grid(tiles, columns=12 if len(tiles) == 12 else 6)

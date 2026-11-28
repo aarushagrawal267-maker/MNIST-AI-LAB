@@ -56,11 +56,11 @@ if "cnn_tuned" in ms and "cnn_tuned_aug" in ms:
     a, b = ms["cnn_tuned"], ms["cnn_tuned_aug"]
     ta, tb = C.metrics("cnn_tuned", "test"), C.metrics("cnn_tuned_aug", "test")
     T.metric_row([
-        T.metric_card("Val. accuracy · no aug", f"{a['val_accuracy'] * 100:.2f}%", f"loss {a['val_loss']:.4f} · {a['epochs_trained']} epochs", "", T.SERIES[0]),
-        T.metric_card("Val. accuracy · augmented", f"{b['val_accuracy'] * 100:.2f}%", f"loss {b['val_loss']:.4f} · {b['epochs_trained']} epochs", "", T.SERIES[1]),
+        T.metric_card("Val. accuracy · no aug", f"{a['val_accuracy'] * 100:.2f}%", f"loss {a['val_loss']:.4f} · {a['epochs_trained']} epochs"),
+        T.metric_card("Val. accuracy · augmented", f"{b['val_accuracy'] * 100:.2f}%", f"loss {b['val_loss']:.4f} · {b['epochs_trained']} epochs"),
         T.metric_card("Δ validation accuracy", f"{(b['val_accuracy'] - a['val_accuracy']) * 100:+.2f} pp",
-                      "augmented − baseline", "", T.BRAND),
-        T.metric_card("Training time", f"{a['train_time_s'] / 60:.1f} → {b['train_time_s'] / 60:.1f} min", "no aug → augmented", "", T.BRAND_2),
+                      "augmented − baseline"),
+        T.metric_card("Training time", f"{a['train_time_s'] / 60:.1f} → {b['train_time_s'] / 60:.1f} min", "no aug → augmented"),
     ])
     ha, hb = load_history("cnn_tuned"), load_history("cnn_tuned_aug")
     if ha and hb:
@@ -79,12 +79,12 @@ if "cnn_tuned" in ms and "cnn_tuned_aug" in ms:
         better = b["val_accuracy"] > a["val_accuracy"]
         st.markdown(T.card(
             "Verdict (from the measured results)",
-            f"With augmentation the validation accuracy is <b style='color:white'>{b['val_accuracy'] * 100:.2f}%</b> "
+            f"With augmentation the validation accuracy is <b style='color:var(--text)'>{b['val_accuracy'] * 100:.2f}%</b> "
             f"versus {a['val_accuracy'] * 100:.2f}% without — augmentation {'improved' if better else 'did not improve'} "
             f"validation performance in this run. Final-epoch train−validation accuracy gap: {gap_a * 100:+.2f} pp "
             f"(no aug) vs {gap_b * 100:+.2f} pp (augmented); training accuracy on augmented images is naturally lower "
             "because those images are harder. "
             + (f"Held-out test accuracy: {ta['accuracy'] * 100:.2f}% vs {tb['accuracy'] * 100:.2f}% (reported only, not used for selection)."
-               if ta and tb else ""), "📊"), unsafe_allow_html=True)
+               if ta and tb else "")), unsafe_allow_html=True)
 else:
     st.info("Run the full training pipeline (`python -m src.train --all`) to produce the with/without augmentation comparison.")

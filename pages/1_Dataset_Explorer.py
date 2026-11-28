@@ -52,22 +52,22 @@ tabs = st.tabs(["Overview", "Samples & pixels", "Digit gallery", "Distributions"
 # ------------------------------------------------------------------ overview
 with tabs[0]:
     T.metric_row([
-        T.metric_card("Total images", f"{stats['n_total']:,}", "train + test", "🗂️", T.SERIES[0]),
-        T.metric_card("Training", f"{stats['n_train']:,}", "90% of the original 60k", "🏋️", T.SERIES[1]),
-        T.metric_card("Validation", f"{stats['n_val']:,}", "stratified 10% split", "🧭", T.SERIES[2]),
-        T.metric_card("Test", f"{stats['n_test']:,}", "original, untouched", "🏁", T.SERIES[3]),
+        T.metric_card("Total images", f"{stats['n_total']:,}", "train + test"),
+        T.metric_card("Training", f"{stats['n_train']:,}", "90% of the original 60k"),
+        T.metric_card("Validation", f"{stats['n_val']:,}", "stratified 10% split"),
+        T.metric_card("Test", f"{stats['n_test']:,}", "original, untouched"),
     ])
     st.write("")
     T.metric_row([
-        T.metric_card("Classes", "10", "digits 0 – 9", "🔢", T.SERIES[4]),
-        T.metric_card("Image size", "28 × 28", "784 pixels · 1 channel", "📐", T.SERIES[6]),
-        T.metric_card("Pixel range", f"{stats['pixel_min']} – {stats['pixel_max']}", f"mean {stats['pixel_mean']:.1f} · std {stats['pixel_std']:.1f}", "🎚️", T.BRAND),
-        T.metric_card("Background", f"{stats['fraction_zero_pixels'] * 100:.1f}%", "of all pixels are exactly 0", "⬛", T.BRAND_2),
+        T.metric_card("Classes", "10", "digits 0 – 9"),
+        T.metric_card("Image size", "28 × 28", "784 pixels · 1 channel"),
+        T.metric_card("Pixel range", f"{stats['pixel_min']} – {stats['pixel_max']}", f"mean {stats['pixel_mean']:.1f} · std {stats['pixel_std']:.1f}"),
+        T.metric_card("Background", f"{stats['fraction_zero_pixels'] * 100:.1f}%", "of all pixels are exactly 0"),
     ])
     T.section("Data validation", "automatic integrity checks run on load")
     rep = _validation()
     df = pd.DataFrame(rep["checks"])
-    df["status"] = np.where(df["passed"], "✅ pass", "❌ fail")
+    df["status"] = np.where(df["passed"], "pass", "fail")
     st.dataframe(df[["status", "check", "detail"]], hide_index=True, use_container_width=True)
     st.caption(f"Source: **{splits.source}** · cached at `data/processed/mnist.npz` · "
                f"{'all checks passed' if rep['all_passed'] else 'some checks failed'}")
@@ -201,10 +201,10 @@ with tabs[4]:
                              unsafe_allow_html=True)
     T.section("Automatic insights", "generated from the statistics above")
     for line in stats["insights"]:
-        st.markdown(f"<div class='purf-card' style='margin-bottom:10px'><p>💡 {line}</p></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='purf-card' style='margin-bottom:8px'><p>{line}</p></div>", unsafe_allow_html=True)
     st.markdown(T.card(
         "Why some digits are harder",
         "Digits whose average shapes overlap (high similarity above) or that have many writing styles (high pixel "
         "variability) leave less margin between classes. A 4 with a closed top resembles a 9; a 5 and a 3 share the "
         "lower curve; 7s written with a crossbar or 1s with a serif deviate from the class mean. The <b>Error Analysis</b> "
-        "page shows which confusions the trained models actually make.", "🧩"), unsafe_allow_html=True)
+        "page shows which confusions the trained models actually make."), unsafe_allow_html=True)

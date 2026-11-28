@@ -177,7 +177,7 @@ button[data-testid^="stBaseButton-primary"]:hover {{ background: #ffffff; color:
 [data-testid="stFileUploaderDropzone"] {{ border: 1px dashed var(--border-strong); background: var(--surface); border-radius: var(--radius); }}
 .stProgress > div > div > div > div {{ background: var(--accent); }}
 div[data-testid="stAlert"] {{ border-radius: var(--radius); }}
-code {{ font-family: var(--mono); }}
+code {{ font-family: var(--mono); color: var(--text2) !important; background: var(--surface2) !important; }}
 hr {{ border-color: var(--border); }}
 
 /* ---------- Hero ---------- */
@@ -215,7 +215,7 @@ hr {{ border-color: var(--border); }}
   position: relative; border-radius: var(--radius); padding: 20px 24px; height: 100%;
   background: var(--surface); border: 1px solid var(--border);
 }}
-.purf-card h4 {{ margin: 0 0 8px; font-size: 16px; color: var(--text); }}
+.purf-card h4 {{ margin: 0 0 8px; padding: 0; font-size: 16px; color: var(--text); }}
 .purf-card p {{ margin: 0; color: var(--text2); font-size: 14px; line-height: 1.6; }}
 .purf-card b {{ color: var(--text); font-weight: 500; }}
 .purf-metric {{ position: relative; border-radius: var(--radius); padding: 16px 20px; background: var(--surface); border: 1px solid var(--border); height: 100%; }}
@@ -236,12 +236,12 @@ hr {{ border-color: var(--border); }}
 .badge.bad {{ color: #f0a0a2; border-color: rgba(229,72,77,.45); }}
 
 /* ---------- Prediction readout: the digit, flat and large ---------- */
-.purf-read {{ display: flex; align-items: center; gap: 24px; padding: 8px 0; flex-wrap: wrap; }}
+.purf-read {{ display: flex; align-items: center; gap: 16px; padding: 8px 0; flex-wrap: wrap; }}
 .purf-read .px {{ display: flex; flex-direction: column; gap: 8px; }}
-.purf-read .px img {{ width: 112px; height: 112px; image-rendering: pixelated; background: #000; border-radius: 4px; display: block;
+.purf-read .px img {{ width: 96px; height: 96px; image-rendering: pixelated; background: #000; border-radius: 4px; display: block;
   box-shadow: 0 0 0 1px var(--border); }}
 .purf-read .px span {{ font-family: var(--mono); font-size: 12px; color: var(--muted); }}
-.purf-read .num {{ display: flex; flex-direction: column; gap: 4px; }}
+.purf-read .num {{ display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }}
 .purf-read .digit {{ font-family: var(--mono); font-size: 128px; font-weight: 500; line-height: .9; color: var(--text); font-variant-numeric: tabular-nums; }}
 .purf-read .conf {{ font-family: var(--mono); font-size: 24px; font-weight: 500; color: var(--accent); font-variant-numeric: tabular-nums; }}
 .purf-read .lbl {{ color: var(--muted); font-size: 13px; }}
@@ -264,6 +264,7 @@ hr {{ border-color: var(--border); }}
 .purf-img-tile img {{ width: 100%; aspect-ratio: 1 / 1; object-fit: contain; background: #000; image-rendering: pixelated; border-radius: 4px; display: block; }}
 .purf-img-tile .cap {{ font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.4; font-variant-numeric: tabular-nums; }}
 .purf-img-tile .cap b {{ color: var(--text); font-weight: 500; }}
+.purf-img-tile .badge {{ font-size: 11px; padding: 0 4px; margin-top: 4px; max-width: 100%; overflow: hidden; }}
 .purf-img-tile.bad {{ border-color: rgba(229,72,77,.45); }}
 
 /* Empty 28x28 sheet, used where an icon would otherwise go */
@@ -278,6 +279,7 @@ hr {{ border-color: var(--border); }}
   display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }}
 
 @media (max-width: 760px) {{
+  .purf-grid {{ grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }}
   .purf-hero {{ grid-template-columns: 1fr; gap: 24px; }}
   .purf-title {{ font-size: 2.5rem; }}
   .purf-sub {{ font-size: 16px; }}
@@ -374,7 +376,7 @@ def image_grid(tiles: list[str], columns: int = 6) -> None:
     import streamlit as st
 
     st.markdown(
-        f'<div style="display:grid;grid-template-columns:repeat({columns},minmax(0,1fr));gap:10px">'
+        f'<div class="purf-grid" style="--cols:{columns};display:grid;grid-template-columns:repeat({columns},minmax(0,1fr));gap:8px">'
         + "".join(tiles) + "</div>",
         unsafe_allow_html=True,
     )

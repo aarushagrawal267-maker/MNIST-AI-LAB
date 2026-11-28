@@ -46,10 +46,10 @@ if df.empty:
 
 best = df.iloc[0]
 T.metric_row([
-    T.metric_card("Best validation acc.", f"{best.val_acc * 100:.2f}%", T.esc(best.model), "🏆", T.BRAND),
-    T.metric_card("Its test accuracy", f"{best.test_acc * 100:.2f}%" if not np.isnan(best.test_acc) else "—", "10,000 held-out images", "🏁", T.BRAND_2),
-    T.metric_card("Fastest inference", f"{df.ms_per_img.min():.3f} ms", T.esc(df.loc[df.ms_per_img.idxmin(), 'model']) + " · per image, batched", "⚡", T.SERIES[2]),
-    T.metric_card("Models compared", str(len(df)), "same splits, same metrics", "🧪", T.SERIES[3]),
+    T.metric_card("Best validation acc.", f"{best.val_acc * 100:.2f}%", T.esc(best.model)),
+    T.metric_card("Its test accuracy", f"{best.test_acc * 100:.2f}%" if not np.isnan(best.test_acc) else "—", "10,000 held-out images"),
+    T.metric_card("Fastest inference", f"{df.ms_per_img.min():.3f} ms", T.esc(df.loc[df.ms_per_img.idxmin(), 'model']) + " · per image, batched"),
+    T.metric_card("Models compared", str(len(df)), "same splits, same metrics"),
 ])
 
 T.section("Validation results", "used for model selection")
@@ -91,7 +91,7 @@ with b:
     for r in d.sort_values("val_acc", ascending=False).itertuples():
         is_prod = r.key == prod
         fig.add_scatter(x=[r.ms_per_img], y=[r.test_acc * 100 if not np.isnan(r.test_acc) else r.val_acc * 100],
-                        mode="markers+text" if is_prod else "markers", text=[f"⚡ {MODEL_NAME}"] if is_prod else None,
+                        mode="markers+text" if is_prod else "markers", text=[MODEL_NAME] if is_prod else None,
                         textposition="bottom center", textfont=dict(color=T.TEXT, size=12),
                         marker=dict(size=14, color=T.model_color(r.key), line=dict(width=2, color=T.SURFACE)), name=r.model,
                         hovertemplate=f"{r.model}<br>%{{x:.4f}} ms/image<br>test accuracy %{{y:.2f}}%<extra></extra>")
@@ -121,8 +121,8 @@ ka = c1.selectbox("Model A", keys, index=0, format_func=C.label)
 kb = c2.selectbox("Model B", keys, index=min(len(keys) - 1, keys.index("logistic_regression") if "logistic_regression" in keys else 1), format_func=C.label)
 ra, rb = df.set_index("key").loc[ka], df.set_index("key").loc[kb]
 T.metric_row([
-    T.metric_card("Δ test accuracy", f"{(ra.test_acc - rb.test_acc) * 100:+.2f} pp", "A − B", "", T.BRAND),
-    T.metric_card("Δ test F1", f"{(ra.test_f1 - rb.test_f1) * 100:+.2f} pp", "A − B", "", T.BRAND_2),
+    T.metric_card("Δ test accuracy", f"{(ra.test_acc - rb.test_acc) * 100:+.2f} pp", "A − B"),
+    T.metric_card("Δ test F1", f"{(ra.test_f1 - rb.test_f1) * 100:+.2f} pp", "A − B"),
     T.metric_card("Inference speed", f"{max(ra.ms_per_img, rb.ms_per_img) / min(ra.ms_per_img, rb.ms_per_img):.1f}×",
                   f"model {'A' if ra.ms_per_img < rb.ms_per_img else 'B'} is faster (batched)", ""),
     T.metric_card("Test errors", f"{int(round((1 - ra.test_acc) * 10000))} vs {int(round((1 - rb.test_acc) * 10000))}", "A vs B (of 10,000)", ""),
@@ -148,9 +148,8 @@ if pa and pb and ma and mb:
         only_b = np.where((ya != y) & (yb == y))[0]
         neither = int(((ya != y) & (yb != y)).sum())
         st.markdown(T.card("Agreement on the test set",
-                           f"Both correct: <b style='color:white'>{both:,}</b><br>Only A correct: <b style='color:white'>{len(only_a):,}</b>"
-                           f"<br>Only B correct: <b style='color:white'>{len(only_b):,}</b><br>Both wrong: <b style='color:white'>{neither:,}</b>",
-                           "🤝"), unsafe_allow_html=True)
+                           f"Both correct: <b style='color:var(--text)'>{both:,}</b><br>Only A correct: <b style='color:var(--text)'>{len(only_a):,}</b>"
+                           f"<br>Only B correct: <b style='color:var(--text)'>{len(only_b):,}</b><br>Both wrong: <b style='color:var(--text)'>{neither:,}</b>"), unsafe_allow_html=True)
         if len(only_a):
             st.caption("Digits only model A got right")
             sel = only_a[:8]
@@ -159,9 +158,9 @@ if pa and pb and ma and mb:
 T.section("Why convolutional networks suit images")
 c = st.columns(3)
 c[0].markdown(T.card("Local patterns", "Each 3×3 filter looks at a small neighbourhood, so the network learns stroke "
-                     "edges, curves and line endings — the building blocks of digits.", "🔍"), unsafe_allow_html=True)
+                     "edges, curves and line endings — the building blocks of digits."), unsafe_allow_html=True)
 c[1].markdown(T.card("Weight sharing", "The same filter slides over the whole image: a loop is recognised wherever it "
-                     "appears, with far fewer parameters than a dense layer on raw pixels.", "♻️"), unsafe_allow_html=True)
+                     "appears, with far fewer parameters than a dense layer on raw pixels."), unsafe_allow_html=True)
 c[2].markdown(T.card("Spatial hierarchy", "Pooling builds tolerance to small shifts and stacks simple features into "
                      "complex ones. Flattened-pixel models (logistic regression, k-NN, SVM, ANN) see 784 unrelated numbers "
-                     "and must learn spatial structure from scratch.", "🏗️"), unsafe_allow_html=True)
+                     "and must learn spatial structure from scratch."), unsafe_allow_html=True)

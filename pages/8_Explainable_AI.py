@@ -105,7 +105,7 @@ cols = st.columns(5)
 for col, (name, mp, signed, desc) in zip(cols, maps):
     with col:
         if mp is None:
-            st.markdown(T.card(name, desc, "🚫"), unsafe_allow_html=True)
+            st.markdown(T.card(name, desc), unsafe_allow_html=True)
         else:
             st.markdown(T.image_tile(X.colorize(mp, signed=signed), f"<b>{name}</b>", upscale=8, rgb=True), unsafe_allow_html=True)
         st.caption(desc)

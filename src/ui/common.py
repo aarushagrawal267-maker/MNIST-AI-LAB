@@ -141,7 +141,7 @@ def model_select(label_text: str, keys: list[str] | None = None, key: str | None
 def prob_bar(proba: np.ndarray, height: int = 300, title: str | None = "Probability for every digit") -> go.Figure:
     proba = np.asarray(proba, dtype=float)
     top = int(proba.argmax())
-    colors = [T.SERIES[0] if i == top else T.NEUTRAL for i in range(10)]
+    colors = [T.ACCENT if i == top else T.NEUTRAL for i in range(10)]
     text = [f"{p * 100:.1f}%" if i == top else "" for i, p in enumerate(proba)]
     fig = go.Figure(go.Bar(
         x=[str(i) for i in range(10)], y=proba * 100, marker=dict(color=colors, cornerradius=4),
@@ -199,7 +199,7 @@ def digit_heatmap(img: np.ndarray, title: str = "", height: int = 380, show_valu
     img = np.asarray(img)
     text = [[str(int(v)) if v > 0 else "" for v in row] for row in img] if show_values else None
     fig = go.Figure(go.Heatmap(z=img, colorscale="gray", showscale=False, text=text, texttemplate="%{text}" if show_values else None,
-                               textfont=dict(size=7, color="#ff9db5"), hovertemplate="row %{y}, col %{x}<br>value %{z}<extra></extra>"))
+                               textfont=dict(size=7, color=T.SERIES[0]), hovertemplate="row %{y}, col %{x}<br>value %{z}<extra></extra>"))
     fig.update_layout(yaxis=dict(autorange="reversed", showgrid=False, scaleanchor="x", constrain="domain"),
                       xaxis=dict(showgrid=False, constrain="domain"))
     return T.style_fig(fig, height=height, title=title, margin=dict(l=30, r=10, t=40, b=30))
@@ -224,9 +224,9 @@ def sidebar_status() -> None:
             e = mm.get_entry(prod)
             va = e.get("val_accuracy")
             st.markdown(
-                f'<div class="purf-card" style="padding:14px 16px"><span class="badge trax">⚡ {MODEL_NAME} online</span>'
-                f'<p style="margin-top:10px;font-size:.82rem">{T.esc(e.get("display_name", prod))}<br>'
-                f'validation accuracy <b style="color:white">{va * 100:.2f}%</b></p></div>',
+                f'<div class="purf-card" style="padding:16px"><span class="badge trax">{MODEL_NAME} online</span>'
+                f'<p style="margin-top:12px;font-size:13px">{T.esc(e.get("display_name", prod))}<br>'
+                f'validation accuracy <b style="font-family:var(--mono)">{va * 100:.2f}%</b></p></div>',
                 unsafe_allow_html=True,
             )
         else:

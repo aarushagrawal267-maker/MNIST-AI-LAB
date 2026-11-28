@@ -36,12 +36,12 @@ if m is None or pr is None:
 proba, y = pr
 
 T.metric_row([
-    T.metric_card("Accuracy", f"{m['accuracy'] * 100:.2f}%", f"{m['n_errors']} errors / {m['n_samples']:,}", "🎯", T.BRAND),
-    T.metric_card("Precision", f"{m['precision_macro'] * 100:.2f}%", "macro average", "", T.SERIES[0]),
-    T.metric_card("Recall", f"{m['recall_macro'] * 100:.2f}%", "macro average", "", T.SERIES[2]),
-    T.metric_card("F1-score", f"{m['f1_macro'] * 100:.2f}%", "macro average", "", T.SERIES[3]),
-    T.metric_card("ROC AUC", f"{m['roc_auc_ovr_macro']:.4f}", "one-vs-rest, macro", "", T.BRAND_2),
-    T.metric_card("Log loss", f"{m['log_loss']:.4f}", f"top-2 acc. {m['top2_accuracy'] * 100:.2f}%", "", T.SERIES[4]),
+    T.metric_card("Accuracy", f"{m['accuracy'] * 100:.2f}%", f"{m['n_errors']} errors / {m['n_samples']:,}"),
+    T.metric_card("Precision", f"{m['precision_macro'] * 100:.2f}%", "macro average"),
+    T.metric_card("Recall", f"{m['recall_macro'] * 100:.2f}%", "macro average"),
+    T.metric_card("F1-score", f"{m['f1_macro'] * 100:.2f}%", "macro average"),
+    T.metric_card("ROC AUC", f"{m['roc_auc_ovr_macro']:.4f}", "one-vs-rest, macro"),
+    T.metric_card("Log loss", f"{m['log_loss']:.4f}", f"top-2 acc. {m['top2_accuracy'] * 100:.2f}%"),
 ])
 
 T.section("Confusion matrix", "rows = actual digit, columns = predicted digit")
