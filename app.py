@@ -31,7 +31,7 @@ pages = {
     "Data": [
         st.Page(P + "1_Dataset_Explorer.py", title="Dataset Explorer", icon=":material/dataset:"),
         st.Page(P + "2_Image_Preprocessing.py", title="Image Preprocessing", icon=":material/tune:"),
-        st.Page(P + "3_Image_Augmentation.py", title="Image Augmentation", icon=":material/auto_awesome:"),
+        st.Page(P + "3_Image_Augmentation.py", title="Image Augmentation", icon=":material/rotate_right:"),
     ],
     "Modeling": [
         st.Page(P + "4_Model_Training.py", title="Model Training", icon=":material/model_training:"),

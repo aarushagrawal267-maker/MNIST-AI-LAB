@@ -105,7 +105,7 @@ if ok:
         C.plot(T.style_fig(fig, 300, "Confidence distribution"), key="b_conf")
     T.section("Gallery")
     T.image_grid([T.image_tile(r["processed"], f"<b style='color:var(--text)'>{r['prediction']}</b> · {r['confidence'] * 100:.1f}%"
-                               f"<br><span style='color:#7f89b8'>{T.esc(r['file'].split('/')[-1][:22])}</span>", upscale=3)
+                               f"<br><span style='color:var(--muted)'>{T.esc(r['file'].split('/')[-1][:22])}</span>", upscale=3)
                   for r in ok[:48]], columns=8)
 
 if bad:

@@ -97,8 +97,8 @@ for i in show:
     order = np.argsort(-proba[i])
     alts = " · ".join(f"{d}: {proba[i][d] * 100:.1f}%" for d in order[1:3])
     tiles.append(T.image_tile(
-        x[i], f"actual <b style='color:#8ef08e'>{y[i]}</b> · predicted <b style='color:#ff9b9b'>{pred[i]}</b>"
-              f"<br>{conf[i] * 100:.1f}% confident<br><span style='color:#7f89b8'>alt {alts}</span><br>#{i}",
+        x[i], f"actual <b style='color:#8fd9b0'>{y[i]}</b> · predicted <b style='color:#f0a0a2'>{pred[i]}</b>"
+              f"<br>{conf[i] * 100:.1f}% confident<br><span style='color:var(--muted)'>alt {alts}</span><br>#{i}",
         upscale=4, bad=True))
 if tiles:
     T.image_grid(tiles, columns=6)

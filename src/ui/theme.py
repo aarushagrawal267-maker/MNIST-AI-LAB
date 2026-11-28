@@ -236,13 +236,13 @@ hr {{ border-color: var(--border); }}
 .badge.bad {{ color: #f0a0a2; border-color: rgba(229,72,77,.45); }}
 
 /* ---------- Prediction readout: the digit, flat and large ---------- */
-.purf-read {{ display: flex; align-items: center; gap: 16px; padding: 8px 0; flex-wrap: wrap; }}
+.purf-read {{ display: flex; align-items: center; gap: 16px; padding: 8px 0; }}
 .purf-read .px {{ display: flex; flex-direction: column; gap: 8px; }}
-.purf-read .px img {{ width: 96px; height: 96px; image-rendering: pixelated; background: #000; border-radius: 4px; display: block;
+.purf-read .px img {{ width: 84px; height: 84px; image-rendering: pixelated; background: #000; border-radius: 4px; display: block;
   box-shadow: 0 0 0 1px var(--border); }}
 .purf-read .px span {{ font-family: var(--mono); font-size: 12px; color: var(--muted); }}
 .purf-read .num {{ display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }}
-.purf-read .digit {{ font-family: var(--mono); font-size: 128px; font-weight: 500; line-height: .9; color: var(--text); font-variant-numeric: tabular-nums; }}
+.purf-read .digit {{ font-family: var(--mono); font-size: 96px; font-weight: 500; line-height: .9; color: var(--text); font-variant-numeric: tabular-nums; }}
 .purf-read .conf {{ font-family: var(--mono); font-size: 24px; font-weight: 500; color: var(--accent); font-variant-numeric: tabular-nums; }}
 .purf-read .lbl {{ color: var(--muted); font-size: 13px; }}
 
@@ -285,7 +285,6 @@ hr {{ border-color: var(--border); }}
   .purf-sub {{ font-size: 16px; }}
   .purf-specimen .px {{ width: 128px; height: 128px; }}
   .purf-specimen .d {{ font-size: 72px; }}
-  .purf-read .digit {{ font-size: 96px; }}
 }}
 </style>
 """
